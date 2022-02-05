@@ -1,8 +1,8 @@
 package imagex_test
 
 import (
-	"bearchit/gox/imagex"
-	"bearchit/gox/imagex/testdata"
+	"github.com/bearchit/gox/imagex"
+	"github.com/bearchit/gox/imagex/testdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

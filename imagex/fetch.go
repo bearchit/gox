@@ -1,8 +1,8 @@
 package imagex
 
 import (
-	"bearchit/gox/urlx"
 	"context"
+	"github.com/bearchit/gox/urlx"
 	"net/url"
 	"sync"
 )

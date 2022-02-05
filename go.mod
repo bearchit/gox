@@ -1,4 +1,4 @@
-module bearchit/gox
+module github.com/bearchit/gox
 
 go 1.17
 
