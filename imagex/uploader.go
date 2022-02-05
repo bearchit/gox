@@ -1,7 +1,7 @@
-package image
+package imagex
 
 import "context"
 
-type uploader interface {
+type Uploader interface {
 	Upload(ctx context.Context, image Image) (string, error)
 }

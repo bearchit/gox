@@ -1,10 +1,10 @@
-package image_test
+package imagex_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/bearchit/gox/image"
+	"github.com/bearchit/gox/imagex"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,7 +23,7 @@ var checksums = map[string]string{
 }
 
 func TestFetch(t *testing.T) {
-	fetched, err := image.Fetch(context.Background(), "https://pixabay.com/get/gae8b9ffe1cceaa155812f29ac70059fbabb2c23eeac7f3fdbc8bdfe7b0d92954bd85d810c2e9dd3c3c3f4f3c3265b6eae10afc2401594f543f0e68f44c183f6acc06f15b824c25ae33c572a16f87c4a7_640.jpg")
+	fetched, err := imagex.Fetch(context.Background(), "https://pixabay.com/get/gae8b9ffe1cceaa155812f29ac70059fbabb2c23eeac7f3fdbc8bdfe7b0d92954bd85d810c2e9dd3c3c3f4f3c3265b6eae10afc2401594f543f0e68f44c183f6acc06f15b824c25ae33c572a16f87c4a7_640.jpg")
 	require.NoError(t, err)
 
 	checksum := checksums[fetched.Metadata.FileName]
@@ -59,7 +59,7 @@ func TestFetchBulk(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 
-			images, err := image.FetchBulk(context.Background(), tt.urls)
+			images, err := imagex.FetchBulk(context.Background(), tt.urls)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

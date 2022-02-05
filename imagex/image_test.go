@@ -1,10 +1,10 @@
-package image_test
+package imagex_test
 
 import (
 	"testing"
 
-	"github.com/bearchit/gox/image"
-	"github.com/bearchit/gox/image/testdata"
+	"github.com/bearchit/gox/imagex"
+	"github.com/bearchit/gox/imagex/testdata"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,14 +12,14 @@ import (
 
 func TestImage_IsZero(t *testing.T) {
 	t.Run("zero", func(t *testing.T) {
-		assert.True(t, image.Image{}.IsZero())
+		assert.True(t, imagex.Image{}.IsZero())
 	})
 
 	t.Run("non zero", func(t *testing.T) {
 		content, err := testdata.Images.ReadFile("images/g670fa3045388cff5904056109444a6ac991aaa695812ab70491c4be9022537d27c525c89dcfa434a88b20fe9e91e33683a0a10193e5a367a493742fee8e55cf5998eaf12257f2af44c9d70447c6f3058_640.jpg")
 		require.NoError(t, err)
 
-		image := image.Image{
+		image := imagex.Image{
 			Content: content,
 		}
 		assert.False(t, image.IsZero())
@@ -43,7 +43,7 @@ func TestImage_Ratio(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 
-			image := image.Image{Metadata: image.Metadata{Width: tt.width, Height: tt.height}}
+			image := imagex.Image{Metadata: imagex.Metadata{Width: tt.width, Height: tt.height}}
 			assert.Equal(t, tt.want, image.Ratio())
 		})
 	}
@@ -53,7 +53,7 @@ func TestImage_Checksum(t *testing.T) {
 	content, err := testdata.Images.ReadFile("images/g670fa3045388cff5904056109444a6ac991aaa695812ab70491c4be9022537d27c525c89dcfa434a88b20fe9e91e33683a0a10193e5a367a493742fee8e55cf5998eaf12257f2af44c9d70447c6f3058_640.jpg")
 	require.NoError(t, err)
 
-	image := image.Image{
+	image := imagex.Image{
 		Content: content,
 	}
 
