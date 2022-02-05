@@ -1,11 +1,11 @@
-package image
+package imagex
 
 import (
 	"context"
 	"net/url"
 	"sync"
 
-	urlx "github.com/bearchit/gox/url"
+	urlx "github.com/bearchit/gox/urlx"
 )
 
 type Fetcher struct {

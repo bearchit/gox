@@ -1,4 +1,4 @@
-package image
+package imagex
 
 import (
 	"crypto/md5"
