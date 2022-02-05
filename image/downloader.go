@@ -1,4 +1,4 @@
-package imagex
+package image
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ type httpDownloader struct {
 
 var _ downloader = (*httpDownloader)(nil)
 
-func newHttpDownloader() *httpDownloader {
+func NewHttpDownloader() *httpDownloader {
 	return &httpDownloader{
 		client: http.Client{
 			Timeout: time.Second * 3,

@@ -1,10 +1,11 @@
-package imagex
+package image
 
 import (
 	"context"
-	"github.com/bearchit/gox/urlx"
 	"net/url"
 	"sync"
+
+	urlx "github.com/bearchit/gox/url"
 )
 
 type Fetcher struct {
@@ -31,6 +32,17 @@ func (fetcher Fetcher) fetch(ctx context.Context, u *url.URL) (Image, error) {
 const (
 	maxFetchWorkers = 10
 )
+
+func (fetcher Fetcher) Fetch(ctx context.Context, rawURL string) (Image, error) {
+	var imageURL *url.URL
+	if v, err := urlx.ParseStringURLs([]string{rawURL}); err != nil {
+		return ZeroImage, err
+	} else {
+		imageURL = v[0]
+	}
+
+	return fetcher.fetch(ctx, imageURL)
+}
 
 func (fetcher Fetcher) FetchBulk(ctx context.Context, rawURLs []string) ([]Image, error) {
 	urls, err := urlx.ParseStringURLs(rawURLs)
@@ -80,7 +92,12 @@ func (fetcher Fetcher) FetchBulk(ctx context.Context, rawURLs []string) ([]Image
 	return result, nil
 }
 
+var DefaultFetcher = NewFetcher(NewHttpDownloader())
+
+func Fetch(ctx context.Context, rawURL string) (Image, error) {
+	return DefaultFetcher.Fetch(ctx, rawURL)
+}
+
 func FetchBulk(ctx context.Context, rawURLs []string) ([]Image, error) {
-	fetcher := NewFetcher(newHttpDownloader())
-	return fetcher.FetchBulk(ctx, rawURLs)
+	return DefaultFetcher.FetchBulk(ctx, rawURLs)
 }

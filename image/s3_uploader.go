@@ -1,11 +1,9 @@
-package imagex
+package image
 
 import (
 	"bytes"
 	"context"
 	"path/filepath"
-
-	"github.com/rs/zerolog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -16,26 +14,23 @@ type s3Uploader struct {
 	client *s3.Client
 	bucket string
 	path   string
-	logger zerolog.Logger
 }
 
 func NewS3Uploader(
 	client *s3.Client,
 	bucket string,
 	path string,
-	logger zerolog.Logger,
 ) *s3Uploader {
 	return &s3Uploader{
 		client: client,
 		bucket: bucket,
 		path:   path,
-		logger: logger,
 	}
 }
 
-var _ Uploader = (*s3Uploader)(nil)
+var _ uploader = (*s3Uploader)(nil)
 
-func (u s3Uploader) Upload(ctx context.Context, image *Image) (string, error) {
+func (u s3Uploader) Upload(ctx context.Context, image Image) (string, error) {
 	uploader := manager.NewUploader(u.client)
 
 	key := image.Checksum()

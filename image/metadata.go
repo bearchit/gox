@@ -1,4 +1,4 @@
-package imagex
+package image
 
 import (
 	"io"
@@ -7,10 +7,11 @@ import (
 
 	stdimage "image"
 
-	_ "golang.org/x/image/webp"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+
+	_ "golang.org/x/image/webp"
 )
 
 type Metadata struct {
