@@ -2,6 +2,7 @@ package image
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 )
 
 type Image struct {
@@ -25,7 +26,7 @@ func (img *Image) Checksum() string {
 	if img.checksum == "" {
 		h := md5.New()
 		h.Write(img.Content)
-		img.checksum = h.EncodeToString(h.Sum(nil))
+		img.checksum = hex.EncodeToString(h.Sum(nil))
 	}
 
 	return img.checksum
