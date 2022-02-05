@@ -1,9 +1,10 @@
-package imagex_test
+package image_test
 
 import (
 	"context"
-	"github.com/bearchit/gox/imagex"
 	"testing"
+
+	"github.com/bearchit/gox/image"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,7 +22,15 @@ var checksums = map[string]string{
 	"gc3644bb7563bc67658940d8712d89d5107f3f289f7ee555694313500d4301c2cc85426e3084d93468e7c47f31ead70ea3933e9e4abdf4f695dceba35dc3a1963466312e663a1d8bfe29a1426388ce043_640.jpg": "8738c73b3436bc8c6df2212c0451339a",
 }
 
-func TestFetchFromURLBulk(t *testing.T) {
+func TestFetch(t *testing.T) {
+	fetched, err := image.Fetch(context.Background(), "https://pixabay.com/get/gae8b9ffe1cceaa155812f29ac70059fbabb2c23eeac7f3fdbc8bdfe7b0d92954bd85d810c2e9dd3c3c3f4f3c3265b6eae10afc2401594f543f0e68f44c183f6acc06f15b824c25ae33c572a16f87c4a7_640.jpg")
+	require.NoError(t, err)
+
+	checksum := checksums[fetched.Metadata.FileName]
+	assert.Equal(t, checksum, fetched.Checksum())
+}
+
+func TestFetchBulk(t *testing.T) {
 	tests := []struct {
 		urls    []string
 		wantErr bool
@@ -50,7 +59,7 @@ func TestFetchFromURLBulk(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 
-			images, err := imagex.FetchBulk(context.Background(), tt.urls)
+			images, err := image.FetchBulk(context.Background(), tt.urls)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

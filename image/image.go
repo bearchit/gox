@@ -1,4 +1,4 @@
-package imagex
+package image
 
 import (
 	"crypto/md5"
@@ -9,6 +9,8 @@ type Image struct {
 	Metadata Metadata
 	Content  []byte
 }
+
+var ZeroImage = Image{}
 
 func (img Image) IsZero() bool {
 	return img.Content == nil
