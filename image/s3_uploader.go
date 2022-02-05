@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type s3Uploader struct {
+type S3Uploader struct {
 	client *s3.Client
 	bucket string
 	path   string
@@ -20,17 +20,17 @@ func NewS3Uploader(
 	client *s3.Client,
 	bucket string,
 	path string,
-) *s3Uploader {
-	return &s3Uploader{
+) *S3Uploader {
+	return &S3Uploader{
 		client: client,
 		bucket: bucket,
 		path:   path,
 	}
 }
 
-var _ uploader = (*s3Uploader)(nil)
+var _ Uploader = (*S3Uploader)(nil)
 
-func (u s3Uploader) Upload(ctx context.Context, image Image) (string, error) {
+func (u S3Uploader) Upload(ctx context.Context, image Image) (string, error) {
 	uploader := manager.NewUploader(u.client)
 
 	key := image.Checksum()
