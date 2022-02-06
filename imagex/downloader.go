@@ -20,12 +20,16 @@ type httpDownloader struct {
 
 var _ downloader = (*httpDownloader)(nil)
 
-func NewHttpDownloader() *httpDownloader {
+func NewHttpDownloader(client http.Client) *httpDownloader {
 	return &httpDownloader{
-		client: http.Client{
-			Timeout: time.Second * 3,
-		},
+		client: client,
 	}
+}
+
+var DefaultHttpDownloader = NewHttpDownloader(http.Client{Timeout: time.Second * 3})
+
+func (dn httpDownloader) Client() http.Client {
+	return dn.client
 }
 
 func (dn httpDownloader) Get(ctx context.Context, u *url.URL) (io.Reader, error) {
