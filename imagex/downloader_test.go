@@ -10,6 +10,6 @@ import (
 
 func TestNewHttpDownloader(t *testing.T) {
 	client := http.Client{Timeout: time.Second * 10}
-	downloader := imagex.NewHttpDownloader(client)
+	downloader := imagex.NewHTTPDownloader(client)
 	assert.Equal(t, client, downloader.Client())
 }

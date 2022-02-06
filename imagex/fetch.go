@@ -34,14 +34,12 @@ const (
 )
 
 func (fetcher Fetcher) Fetch(ctx context.Context, rawURL string) (Image, error) {
-	var imageURL *url.URL
-	if v, err := urlx.ParseStringURLs([]string{rawURL}); err != nil {
+	v, err := urlx.ParseStringURLs([]string{rawURL})
+	if err != nil {
 		return ZeroImage, err
-	} else {
-		imageURL = v[0]
 	}
 
-	return fetcher.fetch(ctx, imageURL)
+	return fetcher.fetch(ctx, v[0])
 }
 
 func (fetcher Fetcher) FetchBulk(ctx context.Context, rawURLs []string) ([]Image, error) {
@@ -92,7 +90,7 @@ func (fetcher Fetcher) FetchBulk(ctx context.Context, rawURLs []string) ([]Image
 	return result, nil
 }
 
-var DefaultFetcher = NewFetcher(DefaultHttpDownloader)
+var DefaultFetcher = NewFetcher(DefaultHTTPDownloader)
 
 func Fetch(ctx context.Context, rawURL string) (Image, error) {
 	return DefaultFetcher.Fetch(ctx, rawURL)
