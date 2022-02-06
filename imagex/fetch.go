@@ -92,7 +92,7 @@ func (fetcher Fetcher) FetchBulk(ctx context.Context, rawURLs []string) ([]Image
 	return result, nil
 }
 
-var DefaultFetcher = NewFetcher(NewHttpDownloader())
+var DefaultFetcher = NewFetcher(DefaultHttpDownloader)
 
 func Fetch(ctx context.Context, rawURL string) (Image, error) {
 	return DefaultFetcher.Fetch(ctx, rawURL)
