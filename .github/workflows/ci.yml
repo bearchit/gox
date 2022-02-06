@@ -31,10 +31,13 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-
 
-      - name: Test
+      - name: Run coverage
         env:
           TZ: "Asia/Seoul"
-        run: make test
+        run: make coverage
+
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
 
       - name: Notification
         uses: 8398a7/action-slack@v3
