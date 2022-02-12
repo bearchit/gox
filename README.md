@@ -5,3 +5,9 @@
 # gox
 
 Tools to boost the development speed of Go programming
+
+## Installation
+
+```shell
+go get -u github.com/bearchit/gox
+```
