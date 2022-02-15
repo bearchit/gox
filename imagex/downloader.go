@@ -3,6 +3,7 @@ package imagex
 import (
 	"bytes"
 	"context"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -43,6 +44,10 @@ func (dn httpDownloader) Get(ctx context.Context, u *url.URL) (io.Reader, error)
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.Errorf("response status is not ok: [code=%v]", resp.StatusCode)
+	}
 
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
