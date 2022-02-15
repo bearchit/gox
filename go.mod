@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.13.0
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.9.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.24.1
+	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
