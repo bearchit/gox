@@ -2,11 +2,13 @@ package imagex_test
 
 import (
 	"context"
-	"github.com/bearchit/gox/imagex/testdata"
-	"github.com/stretchr/testify/suite"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/bearchit/gox/imagex/testdata"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/bearchit/gox/imagex"
 
@@ -28,7 +30,12 @@ type fetchTestSuite struct {
 
 func (s *fetchTestSuite) SetupTest() {
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.FS(testdata.Images)))
+
+	a, err := fs.Sub(testdata.Images, "images")
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	mux.Handle("/", http.FileServer(http.FS(a)))
 
 	srv := httptest.NewServer(mux)
 	s.serverURL = srv.URL
@@ -49,7 +56,7 @@ func (s *fetchTestSuite) TestFetch() {
 
 	t.Parallel()
 
-	fetched, err := imagex.Fetch(context.Background(), s.serverURL+"/images/"+"gae8b9ffe1cceaa155812f29ac70059fbabb2c23eeac7f3fdbc8bdfe7b0d92954bd85d810c2e9dd3c3c3f4f3c3265b6eae10afc2401594f543f0e68f44c183f6acc06f15b824c25ae33c572a16f87c4a7_640.jpg")
+	fetched, err := imagex.Fetch(context.Background(), s.serverURL+"/gae8b9ffe1cceaa155812f29ac70059fbabb2c23eeac7f3fdbc8bdfe7b0d92954bd85d810c2e9dd3c3c3f4f3c3265b6eae10afc2401594f543f0e68f44c183f6acc06f15b824c25ae33c572a16f87c4a7_640.jpg")
 	require.NoError(t, err)
 
 	checksum := checksums[fetched.Metadata.FileName]
@@ -91,7 +98,7 @@ func (s *fetchTestSuite) TestFetchBulk() {
 
 			urls := make([]string, 0, len(tt.urls))
 			for _, u := range tt.urls {
-				urls = append(urls, s.serverURL+"/images/"+u)
+				urls = append(urls, s.serverURL+"/"+u)
 			}
 
 			images, err := imagex.FetchBulk(context.Background(), urls)
