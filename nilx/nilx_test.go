@@ -2,6 +2,7 @@ package nilx_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/bearchit/gox/nilx"
 	"github.com/stretchr/testify/assert"
@@ -43,5 +44,19 @@ func TestBool(t *testing.T) {
 	t.Run("value", func(t *testing.T) {
 		t.Parallel()
 		assert.Equal(t, true, nilx.PtrBool(nilx.BoolPtr(true)))
+	})
+}
+
+func TestTime(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil", func(t *testing.T) {
+		t.Parallel()
+		assert.True(t, nilx.PtrTime(nil).IsZero())
+	})
+	t.Run("value", func(t *testing.T) {
+		t.Parallel()
+		now := time.Now()
+		assert.Equal(t, now, nilx.PtrTime(nilx.TimePtr(now)))
 	})
 }
