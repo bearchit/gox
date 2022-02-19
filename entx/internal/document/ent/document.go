@@ -148,6 +148,10 @@ func (d *Document) Availability() (availability.Availability, error) {
 	return "", errors.New("unexpected availability")
 }
 
+func (d *Document) Lifespan() (*timex.TimeRange, error) {
+	return timex.NewTimeRange(d.LifespanStartAt, d.LifespanEndAt)
+}
+
 // Documents is a parsable slice of Document.
 type Documents []*Document
 
