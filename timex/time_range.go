@@ -1,6 +1,9 @@
 package timex
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type TimeRange struct {
 	startAt time.Time
@@ -22,8 +25,19 @@ func (ls *TimeRange) Ended(at time.Time) bool {
 	return ls.endAt.Before(at)
 }
 
+func NewTimeRange(startAt, endAt time.Time) (*TimeRange, error) {
+	if !endAt.IsZero() && endAt.Before(startAt) {
+		return nil, errors.New("endAt is before startAt")
+	}
+	return &TimeRange{
+		startAt: startAt,
+		endAt:   endAt,
+	}, nil
+}
+
 type TimeRangeBuilder struct {
-	TimeRange
+	startAt time.Time
+	endAt   time.Time
 }
 
 func (b *TimeRangeBuilder) StartAt(v time.Time) *TimeRangeBuilder {
@@ -36,8 +50,16 @@ func (b *TimeRangeBuilder) EndAt(v time.Time) *TimeRangeBuilder {
 	return b
 }
 
-func (b *TimeRangeBuilder) Get() TimeRange {
-	return b.TimeRange
+func (b *TimeRangeBuilder) Get() (*TimeRange, error) {
+	return NewTimeRange(b.startAt, b.endAt)
+}
+
+func (b *TimeRangeBuilder) MustGet() *TimeRange {
+	tr, err := b.Get()
+	if err != nil {
+		panic(err)
+	}
+	return tr
 }
 
 func Build() *TimeRangeBuilder {
