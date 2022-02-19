@@ -7,8 +7,12 @@ type TimeRange struct {
 	endAt   time.Time
 }
 
-func (ls *TimeRange) Started(at time.Time) bool {
-	return ls.startAt.IsZero() || ls.startAt.Before(at)
+func (ls *TimeRange) InProgress(at time.Time) bool {
+	return !ls.Upcoming(at) && !ls.Ended(at)
+}
+
+func (ls *TimeRange) Upcoming(at time.Time) bool {
+	return !ls.startAt.IsZero() && ls.startAt.After(at)
 }
 
 func (ls *TimeRange) Ended(at time.Time) bool {
@@ -16,10 +20,6 @@ func (ls *TimeRange) Ended(at time.Time) bool {
 		return false
 	}
 	return ls.endAt.Before(at)
-}
-
-func (ls *TimeRange) In(at time.Time) bool {
-	return ls.Started(at) && !ls.Ended(at)
 }
 
 type TimeRangeBuilder struct {
