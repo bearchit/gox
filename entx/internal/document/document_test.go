@@ -27,6 +27,19 @@ func (s *documentTestSuite) SetupTest() {
 			s.T().Name(), time.Now().UnixNano(),
 		),
 	)
+
+	now := time.Now()
+	startAt := now.Add(-time.Hour)
+	endAt := now.Add(time.Hour)
+	ctx := context.Background()
+	s.entc.Collection.Create().
+		SetLifespanStartAt(startAt).
+		SetLifespanEndAt(endAt).
+		ExecX(ctx)
+	s.entc.Document.Create().
+		SetLifespanStartAt(startAt).
+		SetLifespanEndAt(endAt).
+		ExecX(ctx)
 }
 
 func TestDocument(t *testing.T) {
@@ -44,19 +57,25 @@ func (s *documentTestSuite) TestQueryAvailable() {
 	t.Run("collection", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := s.entc.Collection.Query().
+		collection, err := s.entc.Collection.Query().
 			Available().
-			Count(ctx)
+			First(ctx)
+		require.NoError(t, err)
+
+		_, err = collection.Lifespan()
 		require.NoError(t, err)
 	})
 
 	t.Run("document", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := s.entc.Document.Query().
+		document, err := s.entc.Document.Query().
 			Available().
-			Count(ctx)
-		require.NoError(s.T(), err)
+			First(ctx)
+		require.NoError(t, err)
+
+		_, err = document.Lifespan()
+		require.NoError(t, err)
 	})
 
 	t.Run("revision", func(t *testing.T) {

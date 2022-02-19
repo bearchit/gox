@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/bearchit/gox/entx/available/activation"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
+	"github.com/bearchit/gox/timex"
 )
 
 // Document is the model entity for the Document schema.
@@ -121,6 +122,10 @@ func (d *Document) String() string {
 	builder.WriteString(d.DeletedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+func (d *Document) Lifespan() (*timex.TimeRange, error) {
+	return timex.NewTimeRange(d.LifespanStartAt, d.LifespanEndAt)
 }
 
 // Documents is a parsable slice of Document.

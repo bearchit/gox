@@ -1,0 +1,14 @@
+{{/* gotype: entgo.io/ent/entc/gen.Type */}}
+
+{{ define "model/additional" }}
+
+{{ $receiver := $.Receiver }}
+{{ $annotation := $.Annotations.Available }}
+
+{{- if $annotation.Lifespan -}}
+func ({{ $receiver }} *{{ $.Name }}) Lifespan() (*timex.TimeRange, error) {
+	return timex.NewTimeRange({{ $receiver }}.LifespanStartAt, {{ $receiver }}.LifespanEndAt)
+}
+{{ end }}
+
+{{ end }}
