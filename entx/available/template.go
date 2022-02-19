@@ -8,10 +8,12 @@ import (
 var (
 	QueryAvailableTemplate = parseT("template/query_available.tmpl")
 	LifespanTemplate       = parseT("template/lifespan.tmpl")
+	AvailabilityTemplate   = parseT("template/availability.tmpl")
 
 	AllTemplates = []*gen.Template{
 		QueryAvailableTemplate,
 		LifespanTemplate,
+		AvailabilityTemplate,
 	}
 
 	//go:embed template/*

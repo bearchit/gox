@@ -12,6 +12,10 @@ func (Annotation) Name() string {
 	return "Available"
 }
 
+func (a Annotation) CanUseAvailability() bool {
+	return a.Activation || a.Lifespan
+}
+
 func (a Annotation) Merge(other schema.Annotation) schema.Annotation {
 	var ant Annotation
 	switch other := other.(type) {

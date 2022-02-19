@@ -3,12 +3,14 @@
 package ent
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available/availability"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/timex"
 )
@@ -124,8 +126,26 @@ func (d *Document) String() string {
 	return builder.String()
 }
 
-func (d *Document) Lifespan() (*timex.TimeRange, error) {
-	return timex.NewTimeRange(d.LifespanStartAt, d.LifespanEndAt)
+func (d *Document) Availability() (availability.Availability, error) {
+	if d.Activation == activation.Deactivated {
+		return availability.Deactivated, nil
+	}
+
+	tr, err := timex.NewTimeRange(d.LifespanStartAt, d.LifespanEndAt)
+	if err != nil {
+		return "", err
+	}
+	now := time.Now()
+	switch {
+	case tr.InProgress(now):
+		return availability.InProgress, nil
+	case tr.Upcoming(now):
+		return availability.Upcoming, nil
+	case tr.Ended(now):
+		return availability.Ended, nil
+	}
+
+	return "", errors.New("unexpected availability")
 }
 
 // Documents is a parsable slice of Document.

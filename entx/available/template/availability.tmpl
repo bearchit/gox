@@ -1,0 +1,32 @@
+{{/* gotype: entgo.io/ent/entc/gen.Type */}}
+
+{{ define "model/additional" }}
+
+{{ $receiver := $.Receiver }}
+{{ $annotation := $.Annotations.Available }}
+
+{{- if and $annotation.Activation $annotation.Lifespan -}}
+func ({{ $receiver }} *{{ $.Name }}) Availability() (availability.Availability, error) {
+	if {{ $receiver }}.Activation == activation.Deactivated {
+	    return availability.Deactivated, nil
+    }
+
+	tr, err := timex.NewTimeRange({{ $receiver }}.LifespanStartAt, {{ $receiver }}.LifespanEndAt)
+	if err != nil {
+        return "", err
+    }
+    now := time.Now()
+    switch {
+	case tr.InProgress(now):
+        return availability.InProgress, nil
+    case tr.Upcoming(now):
+        return availability.Upcoming, nil
+    case tr.Ended(now):
+        return availability.Ended, nil
+    }
+
+    return "", 	errors.New("unexpected availability")
+}
+{{ end }}
+
+{{ end }}

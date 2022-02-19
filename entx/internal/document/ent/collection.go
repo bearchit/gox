@@ -9,7 +9,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/bearchit/gox/entx/internal/document/ent/collection"
-	"github.com/bearchit/gox/timex"
 )
 
 // Collection is the model entity for the Collection schema.
@@ -99,10 +98,6 @@ func (c *Collection) String() string {
 	builder.WriteString(c.LifespanEndAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-func (c *Collection) Lifespan() (*timex.TimeRange, error) {
-	return timex.NewTimeRange(c.LifespanStartAt, c.LifespanEndAt)
 }
 
 // Collections is a parsable slice of Collection.
