@@ -5,7 +5,7 @@ package revision
 import (
 	"fmt"
 
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 )
 
 const (
@@ -38,10 +38,10 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-const DefaultActivation activation.Activation = "ACTIVATED"
+const DefaultActivation available.Activation = "ACTIVATED"
 
 // ActivationValidator is a validator for the "activation" field enum values. It is called by the builders before save.
-func ActivationValidator(a activation.Activation) error {
+func ActivationValidator(a available.Activation) error {
 	switch a {
 	case "ACTIVATED", "DEACTIVATED":
 		return nil

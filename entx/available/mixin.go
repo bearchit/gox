@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
-	"github.com/bearchit/gox/entx/available/activation"
 )
 
 type Mixin struct {
@@ -15,8 +14,8 @@ type Mixin struct {
 
 type option struct {
 	activation   bool
-	lifespan     bool
 	softDeletion bool
+	lifespan     LifespanOption
 }
 
 type OptionFunc func(*option)
@@ -24,8 +23,12 @@ type OptionFunc func(*option)
 func NewMixin(opts ...OptionFunc) Mixin {
 	result := Mixin{
 		option: option{
-			activation:   true,
-			lifespan:     true,
+			activation: true,
+			lifespan: LifespanOption{
+				Enabled:            true,
+				StorageNameStartAt: "lifespan_end_at",
+				StorageNameEndAt:   "lifespan_start_at",
+			},
 			softDeletion: true,
 		},
 	}
@@ -41,9 +44,15 @@ func WithActivation(v bool) OptionFunc {
 	}
 }
 
-func WithLifespan(v bool) OptionFunc {
+type LifespanOption struct {
+	Enabled            bool
+	StorageNameStartAt string
+	StorageNameEndAt   string
+}
+
+func WithLifespan(optFn func(*LifespanOption)) OptionFunc {
 	return func(o *option) {
-		o.lifespan = v
+		optFn(&o.lifespan)
 	}
 }
 
@@ -58,17 +67,17 @@ func (m Mixin) Fields() []ent.Field {
 	if m.activation {
 		fields = append(fields, []ent.Field{
 			field.Enum("activation").
-				GoType(activation.Activation("")).
-				Default(activation.Activated.String()),
+				GoType(Activation("")).
+				Default(Activated.String()),
 		}...)
 	}
-	if m.lifespan {
+	if m.lifespan.Enabled {
 		fields = append(fields, []ent.Field{
 			field.Time("lifespan_start_at").
-				StorageKey("lifespan_start_at").
+				StorageKey(m.lifespan.StorageNameStartAt).
 				Optional(),
 			field.Time("lifespan_end_at").
-				StorageKey("lifespan_end_at").
+				StorageKey(m.lifespan.StorageNameEndAt).
 				Optional(),
 		}...)
 	}
@@ -86,7 +95,7 @@ func (m Mixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		Annotation{
 			Activation:   m.activation,
-			Lifespan:     m.lifespan,
+			Lifespan:     m.lifespan.Enabled,
 			SoftDeletion: m.softDeletion,
 		},
 	}

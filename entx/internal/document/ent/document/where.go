@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
 
@@ -115,7 +115,7 @@ func DeletedAt(v time.Time) predicate.Document {
 }
 
 // ActivationEQ applies the EQ predicate on the "activation" field.
-func ActivationEQ(v activation.Activation) predicate.Document {
+func ActivationEQ(v available.Activation) predicate.Document {
 	vc := v
 	return predicate.Document(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldActivation), vc))
@@ -123,7 +123,7 @@ func ActivationEQ(v activation.Activation) predicate.Document {
 }
 
 // ActivationNEQ applies the NEQ predicate on the "activation" field.
-func ActivationNEQ(v activation.Activation) predicate.Document {
+func ActivationNEQ(v available.Activation) predicate.Document {
 	vc := v
 	return predicate.Document(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldActivation), vc))
@@ -131,7 +131,7 @@ func ActivationNEQ(v activation.Activation) predicate.Document {
 }
 
 // ActivationIn applies the In predicate on the "activation" field.
-func ActivationIn(vs ...activation.Activation) predicate.Document {
+func ActivationIn(vs ...available.Activation) predicate.Document {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -148,7 +148,7 @@ func ActivationIn(vs ...activation.Activation) predicate.Document {
 }
 
 // ActivationNotIn applies the NotIn predicate on the "activation" field.
-func ActivationNotIn(vs ...activation.Activation) predicate.Document {
+func ActivationNotIn(vs ...available.Activation) predicate.Document {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]

@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
@@ -30,13 +30,13 @@ func (du *DocumentUpdate) Where(ps ...predicate.Document) *DocumentUpdate {
 }
 
 // SetActivation sets the "activation" field.
-func (du *DocumentUpdate) SetActivation(a activation.Activation) *DocumentUpdate {
+func (du *DocumentUpdate) SetActivation(a available.Activation) *DocumentUpdate {
 	du.mutation.SetActivation(a)
 	return du
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (du *DocumentUpdate) SetNillableActivation(a *activation.Activation) *DocumentUpdate {
+func (du *DocumentUpdate) SetNillableActivation(a *available.Activation) *DocumentUpdate {
 	if a != nil {
 		du.SetActivation(*a)
 	}
@@ -262,13 +262,13 @@ type DocumentUpdateOne struct {
 }
 
 // SetActivation sets the "activation" field.
-func (duo *DocumentUpdateOne) SetActivation(a activation.Activation) *DocumentUpdateOne {
+func (duo *DocumentUpdateOne) SetActivation(a available.Activation) *DocumentUpdateOne {
 	duo.mutation.SetActivation(a)
 	return duo
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (duo *DocumentUpdateOne) SetNillableActivation(a *activation.Activation) *DocumentUpdateOne {
+func (duo *DocumentUpdateOne) SetNillableActivation(a *available.Activation) *DocumentUpdateOne {
 	if a != nil {
 		duo.SetActivation(*a)
 	}

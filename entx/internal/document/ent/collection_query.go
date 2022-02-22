@@ -432,7 +432,20 @@ func (cq *CollectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (cq *CollectionQuery) Available() *CollectionQuery {
+func (cq *CollectionQuery) Available(preview bool) *CollectionQuery {
+	now := time.Now()
+	if preview {
+		return cq.Where(
+			collection.Or(
+				collection.LifespanEndAtIsNil(),
+				collection.And(
+					collection.LifespanEndAtNotNil(),
+					collection.LifespanEndAtGTE(now),
+				),
+			),
+		)
+	}
+
 	return cq.Where(
 		collection.Or(
 			collection.LifespanStartAtIsNil(),

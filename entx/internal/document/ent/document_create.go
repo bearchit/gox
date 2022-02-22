@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 )
 
@@ -22,13 +22,13 @@ type DocumentCreate struct {
 }
 
 // SetActivation sets the "activation" field.
-func (dc *DocumentCreate) SetActivation(a activation.Activation) *DocumentCreate {
+func (dc *DocumentCreate) SetActivation(a available.Activation) *DocumentCreate {
 	dc.mutation.SetActivation(a)
 	return dc
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (dc *DocumentCreate) SetNillableActivation(a *activation.Activation) *DocumentCreate {
+func (dc *DocumentCreate) SetNillableActivation(a *available.Activation) *DocumentCreate {
 	if a != nil {
 		dc.SetActivation(*a)
 	}

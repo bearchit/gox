@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/available/availability"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/timex"
@@ -21,7 +21,7 @@ type Document struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Activation holds the value of the "activation" field.
-	Activation activation.Activation `json:"activation,omitempty"`
+	Activation available.Activation `json:"activation,omitempty"`
 	// LifespanStartAt holds the value of the "lifespan_start_at" field.
 	LifespanStartAt time.Time `json:"lifespan_start_at,omitempty"`
 	// LifespanEndAt holds the value of the "lifespan_end_at" field.
@@ -66,7 +66,7 @@ func (d *Document) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field activation", values[i])
 			} else if value.Valid {
-				d.Activation = activation.Activation(value.String)
+				d.Activation = available.Activation(value.String)
 			}
 		case document.FieldLifespanStartAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -127,7 +127,7 @@ func (d *Document) String() string {
 }
 
 func (d *Document) Availability() (availability.Availability, error) {
-	if d.Activation == activation.Deactivated {
+	if d.Activation == available.Deactivated {
 		return availability.Deactivated, nil
 	}
 

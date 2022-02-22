@@ -7,7 +7,7 @@
 
 {{- if and $annotation.Activation $annotation.Lifespan -}}
 func ({{ $receiver }} *{{ $.Name }}) Availability() (availability.Availability, error) {
-	if {{ $receiver }}.Activation == activation.Deactivated {
+	if {{ $receiver }}.Activation == available.Deactivated {
 	    return availability.Deactivated, nil
     }
 

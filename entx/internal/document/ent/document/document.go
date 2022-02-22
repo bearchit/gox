@@ -5,7 +5,7 @@ package document
 import (
 	"fmt"
 
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 )
 
 const (
@@ -16,9 +16,9 @@ const (
 	// FieldActivation holds the string denoting the activation field in the database.
 	FieldActivation = "activation"
 	// FieldLifespanStartAt holds the string denoting the lifespan_start_at field in the database.
-	FieldLifespanStartAt = "lifespan_start_at"
+	FieldLifespanStartAt = "lifespan_end_at"
 	// FieldLifespanEndAt holds the string denoting the lifespan_end_at field in the database.
-	FieldLifespanEndAt = "lifespan_end_at"
+	FieldLifespanEndAt = "lifespan_start_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
 	// Table holds the table name of the document in the database.
@@ -44,10 +44,10 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-const DefaultActivation activation.Activation = "ACTIVATED"
+const DefaultActivation available.Activation = "ACTIVATED"
 
 // ActivationValidator is a validator for the "activation" field enum values. It is called by the builders before save.
-func ActivationValidator(a activation.Activation) error {
+func ActivationValidator(a available.Activation) error {
 	switch a {
 	case "ACTIVATED", "DEACTIVATED":
 		return nil

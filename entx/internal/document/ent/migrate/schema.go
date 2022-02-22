@@ -11,8 +11,8 @@ var (
 	// CollectionsColumns holds the columns for the "collections" table.
 	CollectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
 		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
 	}
 	// CollectionsTable holds the schema information for the "collections" table.
 	CollectionsTable = &schema.Table{
@@ -24,8 +24,8 @@ var (
 	DocumentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "activation", Type: field.TypeEnum, Enums: []string{"ACTIVATED", "DEACTIVATED"}, Default: "ACTIVATED"},
-		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
 		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 	}
 	// DocumentsTable holds the schema information for the "documents" table.

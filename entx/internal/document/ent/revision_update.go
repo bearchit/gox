@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
@@ -30,13 +30,13 @@ func (ru *RevisionUpdate) Where(ps ...predicate.Revision) *RevisionUpdate {
 }
 
 // SetActivation sets the "activation" field.
-func (ru *RevisionUpdate) SetActivation(a activation.Activation) *RevisionUpdate {
+func (ru *RevisionUpdate) SetActivation(a available.Activation) *RevisionUpdate {
 	ru.mutation.SetActivation(a)
 	return ru
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (ru *RevisionUpdate) SetNillableActivation(a *activation.Activation) *RevisionUpdate {
+func (ru *RevisionUpdate) SetNillableActivation(a *available.Activation) *RevisionUpdate {
 	if a != nil {
 		ru.SetActivation(*a)
 	}
@@ -196,13 +196,13 @@ type RevisionUpdateOne struct {
 }
 
 // SetActivation sets the "activation" field.
-func (ruo *RevisionUpdateOne) SetActivation(a activation.Activation) *RevisionUpdateOne {
+func (ruo *RevisionUpdateOne) SetActivation(a available.Activation) *RevisionUpdateOne {
 	ruo.mutation.SetActivation(a)
 	return ruo
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (ruo *RevisionUpdateOne) SetNillableActivation(a *activation.Activation) *RevisionUpdateOne {
+func (ruo *RevisionUpdateOne) SetNillableActivation(a *available.Activation) *RevisionUpdateOne {
 	if a != nil {
 		ruo.SetActivation(*a)
 	}

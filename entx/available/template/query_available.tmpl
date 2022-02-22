@@ -6,15 +6,41 @@
 {{ $receiver := receiver $builder }}
 {{ $annotation := $.Annotations.Available }}
 
+{{ if $annotation }}
+
+{{- if $annotation.Lifespan -}}
+func ({{ $receiver }} *{{ $builder }}) Available(preview bool) *{{ $builder }} {
+{{- else }}
 func ({{ $receiver }} *{{ $builder }}) Available() *{{ $builder }} {
-	{{- $predPackage := print (lower $.Name) -}}
+{{- end }}
+	{{ $predPackage := print (lower $.Name) -}}
+	{{- if $annotation.Lifespan -}}
+	now := time.Now()
+	{{- end -}}
+
+	{{ if $annotation.SoftDeletion }}
+	{{ $receiver }}.Where(
+		{{ $predPackage }}.DeletedAtIsNil(),
+	)
+	{{- end -}}
+
+	{{- if $annotation.Lifespan }}
+	if preview {
+		return {{ $receiver }}.Where(
+			{{ $predPackage }}.Or(
+				{{ $predPackage }}.LifespanEndAtIsNil(),
+				{{ $predPackage }}.And(
+					{{ $predPackage }}.LifespanEndAtNotNil(),
+					{{ $predPackage }}.LifespanEndAtGTE(now),
+				),
+			),
+		)
+	}
+	{{ end }}
+
 	return {{ $receiver }}.Where(
 		{{ if $annotation.Activation -}}
-		{{ $predPackage }}.ActivationEQ(activation.Activated),
-		{{ end }}
-
-		{{- if $annotation.SoftDeletion -}}
-		{{ $predPackage }}.DeletedAtIsNil(),
+		{{ $predPackage }}.ActivationEQ(available.Activated),
 		{{ end }}
 
 		{{- if $annotation.Lifespan -}}
@@ -35,5 +61,6 @@ func ({{ $receiver }} *{{ $builder }}) Available() *{{ $builder }} {
 		{{ end }}
 	)
 }
+{{ end }}
 
 {{ end }}

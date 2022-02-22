@@ -8,9 +8,9 @@ const (
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
 	// FieldLifespanStartAt holds the string denoting the lifespan_start_at field in the database.
-	FieldLifespanStartAt = "lifespan_start_at"
+	FieldLifespanStartAt = "lifespan_end_at"
 	// FieldLifespanEndAt holds the string denoting the lifespan_end_at field in the database.
-	FieldLifespanEndAt = "lifespan_end_at"
+	FieldLifespanEndAt = "lifespan_start_at"
 	// Table holds the table name of the collection in the database.
 	Table = "collections"
 )

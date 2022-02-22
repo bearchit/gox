@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
 
@@ -18,7 +18,7 @@ type Revision struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Activation holds the value of the "activation" field.
-	Activation activation.Activation `json:"activation,omitempty"`
+	Activation available.Activation `json:"activation,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt time.Time `json:"deleted_at,omitempty"`
 }
@@ -59,7 +59,7 @@ func (r *Revision) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field activation", values[i])
 			} else if value.Valid {
-				r.Activation = activation.Activation(value.String)
+				r.Activation = available.Activation(value.String)
 			}
 		case revision.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

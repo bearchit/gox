@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
@@ -255,7 +255,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -282,7 +282,7 @@ func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupB
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //	}
 //
 //	client.Document.Query().
@@ -433,10 +433,25 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (dq *DocumentQuery) Available() *DocumentQuery {
-	return dq.Where(
-		document.ActivationEQ(activation.Activated),
+func (dq *DocumentQuery) Available(preview bool) *DocumentQuery {
+	now := time.Now()
+	dq.Where(
 		document.DeletedAtIsNil(),
+	)
+	if preview {
+		return dq.Where(
+			document.Or(
+				document.LifespanEndAtIsNil(),
+				document.And(
+					document.LifespanEndAtNotNil(),
+					document.LifespanEndAtGTE(now),
+				),
+			),
+		)
+	}
+
+	return dq.Where(
+		document.ActivationEQ(available.Activated),
 		document.Or(
 			document.LifespanStartAtIsNil(),
 			document.And(

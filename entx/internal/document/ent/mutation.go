@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/collection"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
@@ -444,7 +444,7 @@ type DocumentMutation struct {
 	op                Op
 	typ               string
 	id                *int
-	activation        *activation.Activation
+	activation        *available.Activation
 	lifespan_start_at *time.Time
 	lifespan_end_at   *time.Time
 	deleted_at        *time.Time
@@ -553,12 +553,12 @@ func (m *DocumentMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetActivation sets the "activation" field.
-func (m *DocumentMutation) SetActivation(a activation.Activation) {
+func (m *DocumentMutation) SetActivation(a available.Activation) {
 	m.activation = &a
 }
 
 // Activation returns the value of the "activation" field in the mutation.
-func (m *DocumentMutation) Activation() (r activation.Activation, exists bool) {
+func (m *DocumentMutation) Activation() (r available.Activation, exists bool) {
 	v := m.activation
 	if v == nil {
 		return
@@ -569,7 +569,7 @@ func (m *DocumentMutation) Activation() (r activation.Activation, exists bool) {
 // OldActivation returns the old "activation" field's value of the Document entity.
 // If the Document object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DocumentMutation) OldActivation(ctx context.Context) (v activation.Activation, err error) {
+func (m *DocumentMutation) OldActivation(ctx context.Context) (v available.Activation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldActivation is only allowed on UpdateOne operations")
 	}
@@ -810,7 +810,7 @@ func (m *DocumentMutation) OldField(ctx context.Context, name string) (ent.Value
 func (m *DocumentMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case document.FieldActivation:
-		v, ok := value.(activation.Activation)
+		v, ok := value.(available.Activation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -977,7 +977,7 @@ type RevisionMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	activation    *activation.Activation
+	activation    *available.Activation
 	deleted_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
@@ -1084,12 +1084,12 @@ func (m *RevisionMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetActivation sets the "activation" field.
-func (m *RevisionMutation) SetActivation(a activation.Activation) {
+func (m *RevisionMutation) SetActivation(a available.Activation) {
 	m.activation = &a
 }
 
 // Activation returns the value of the "activation" field in the mutation.
-func (m *RevisionMutation) Activation() (r activation.Activation, exists bool) {
+func (m *RevisionMutation) Activation() (r available.Activation, exists bool) {
 	v := m.activation
 	if v == nil {
 		return
@@ -1100,7 +1100,7 @@ func (m *RevisionMutation) Activation() (r activation.Activation, exists bool) {
 // OldActivation returns the old "activation" field's value of the Revision entity.
 // If the Revision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RevisionMutation) OldActivation(ctx context.Context) (v activation.Activation, err error) {
+func (m *RevisionMutation) OldActivation(ctx context.Context) (v available.Activation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldActivation is only allowed on UpdateOne operations")
 	}
@@ -1229,7 +1229,7 @@ func (m *RevisionMutation) OldField(ctx context.Context, name string) (ent.Value
 func (m *RevisionMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case revision.FieldActivation:
-		v, ok := value.(activation.Activation)
+		v, ok := value.(available.Activation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

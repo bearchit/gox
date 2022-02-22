@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
@@ -254,7 +254,7 @@ func (rq *RevisionQuery) Clone() *RevisionQuery {
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -281,7 +281,7 @@ func (rq *RevisionQuery) GroupBy(field string, fields ...string) *RevisionGroupB
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //	}
 //
 //	client.Revision.Query().
@@ -433,9 +433,13 @@ func (rq *RevisionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 func (rq *RevisionQuery) Available() *RevisionQuery {
-	return rq.Where(
-		revision.ActivationEQ(activation.Activated),
+
+	rq.Where(
 		revision.DeletedAtIsNil(),
+	)
+
+	return rq.Where(
+		revision.ActivationEQ(available.Activated),
 	)
 }
 

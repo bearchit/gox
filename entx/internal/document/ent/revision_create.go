@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
 
@@ -22,13 +22,13 @@ type RevisionCreate struct {
 }
 
 // SetActivation sets the "activation" field.
-func (rc *RevisionCreate) SetActivation(a activation.Activation) *RevisionCreate {
+func (rc *RevisionCreate) SetActivation(a available.Activation) *RevisionCreate {
 	rc.mutation.SetActivation(a)
 	return rc
 }
 
 // SetNillableActivation sets the "activation" field if the given value is not nil.
-func (rc *RevisionCreate) SetNillableActivation(a *activation.Activation) *RevisionCreate {
+func (rc *RevisionCreate) SetNillableActivation(a *available.Activation) *RevisionCreate {
 	if a != nil {
 		rc.SetActivation(*a)
 	}
