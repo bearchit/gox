@@ -15,7 +15,7 @@ type Mixin struct {
 type option struct {
 	activation   bool
 	softDeletion bool
-	lifespan     LifespanOption
+	lifespan     Lifespan
 }
 
 type OptionFunc func(*option)
@@ -24,10 +24,12 @@ func NewMixin(opts ...OptionFunc) Mixin {
 	result := Mixin{
 		option: option{
 			activation: true,
-			lifespan: LifespanOption{
-				Enabled:            true,
-				StorageNameStartAt: "lifespan_end_at",
-				StorageNameEndAt:   "lifespan_start_at",
+			lifespan: Lifespan{
+				enabled: true,
+				option: LifespanOption{
+					StorageNameStartAt: "lifespan_end_at",
+					StorageNameEndAt:   "lifespan_start_at",
+				},
 			},
 			softDeletion: true,
 		},
@@ -38,21 +40,49 @@ func NewMixin(opts ...OptionFunc) Mixin {
 	return result
 }
 
+func OnlyActivation() OptionFunc {
+	return func(o *option) {
+		*o = option{activation: true}
+	}
+}
+
 func WithActivation(v bool) OptionFunc {
 	return func(o *option) {
 		o.activation = v
 	}
 }
 
+type Lifespan struct {
+	enabled bool
+	option  LifespanOption
+}
+
 type LifespanOption struct {
-	Enabled            bool
 	StorageNameStartAt string
 	StorageNameEndAt   string
 }
 
-func WithLifespan(optFn func(*LifespanOption)) OptionFunc {
+func WithLifespan(v bool) OptionFunc {
 	return func(o *option) {
-		optFn(&o.lifespan)
+		o.lifespan.enabled = true
+	}
+}
+
+func OnlyLifespan() OptionFunc {
+	return func(o *option) {
+		*o = option{lifespan: Lifespan{enabled: true}}
+	}
+}
+
+func WithLifespanOption(optFn func(*LifespanOption)) OptionFunc {
+	return func(o *option) {
+		optFn(&o.lifespan.option)
+	}
+}
+
+func OnlySoftDeletion() OptionFunc {
+	return func(o *option) {
+		*o = option{softDeletion: true}
 	}
 }
 
@@ -71,13 +101,13 @@ func (m Mixin) Fields() []ent.Field {
 				Default(Activated.String()),
 		}...)
 	}
-	if m.lifespan.Enabled {
+	if m.lifespan.enabled {
 		fields = append(fields, []ent.Field{
 			field.Time("lifespan_start_at").
-				StorageKey(m.lifespan.StorageNameStartAt).
+				StorageKey(m.lifespan.option.StorageNameStartAt).
 				Optional(),
 			field.Time("lifespan_end_at").
-				StorageKey(m.lifespan.StorageNameEndAt).
+				StorageKey(m.lifespan.option.StorageNameEndAt).
 				Optional(),
 		}...)
 	}
@@ -95,7 +125,7 @@ func (m Mixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		Annotation{
 			Activation:   m.activation,
-			Lifespan:     m.lifespan.Enabled,
+			Lifespan:     m.lifespan.enabled,
 			SoftDeletion: m.softDeletion,
 		},
 	}
