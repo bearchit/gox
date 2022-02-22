@@ -8,11 +8,12 @@
 
 {{ if $annotation }}
 
-{{- if $annotation.Lifespan -}}
-func ({{ $receiver }} *{{ $builder }}) Available(preview bool) *{{ $builder }} {
-{{- else }}
-func ({{ $receiver }} *{{ $builder }}) Available() *{{ $builder }} {
-{{- end }}
+func ({{ $receiver }} *{{ $builder }}) Available(opts ...available.QueryOptionFunc) *{{ $builder }} {
+	option := &available.QueryOption{}
+	for _, opt := range opts {
+		opt(option)
+	}
+
 	{{ $predPackage := print (lower $.Name) -}}
 	{{- if $annotation.Lifespan -}}
 	now := time.Now()
@@ -25,7 +26,7 @@ func ({{ $receiver }} *{{ $builder }}) Available() *{{ $builder }} {
 	{{- end -}}
 
 	{{- if $annotation.Lifespan }}
-	if preview {
+	if option.Preview {
 		return {{ $receiver }}.Where(
 			{{ $predPackage }}.Or(
 				{{ $predPackage }}.LifespanEndAtIsNil(),
