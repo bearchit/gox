@@ -2,6 +2,9 @@ package available_test
 
 import (
 	"entgo.io/ent"
+	"github.com/bearchit/gox/entx/available"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func hasFields(fields []ent.Field, fieldNames ...string) bool {
@@ -16,9 +19,11 @@ func hasFields(fields []ent.Field, fieldNames ...string) bool {
 	return len(matches) == len(fieldNames)
 }
 
-//func TestLifespanOption(t *testing.T) {
-//	tests := []struct {
-//		given available.Mixin
-//	}{}
-//
-//}
+func TestWithActivationOption(t *testing.T) {
+	mixin := available.NewMixin(
+		available.WithActivationOption(func(option *available.ActivationOption) {
+			option.SetFieldName("state")
+		}),
+	)
+	assert.True(t, hasFields(mixin.Fields(), "state"))
+}

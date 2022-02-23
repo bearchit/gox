@@ -10,94 +10,145 @@ import (
 
 type Mixin struct {
 	mixin.Schema
-	option
+	config
 }
 
-type option struct {
-	activation   bool
-	softDeletion bool
+type config struct {
+	activation   ActivationOption
+	softDeletion SoftDeletionOption
 	lifespan     LifespanOption
 }
 
-type OptionFunc func(*option)
+type Option func(*config)
 
-func NewMixin(opts ...OptionFunc) Mixin {
-	option := option{}
-	for _, opt := range opts {
-		opt(&option)
+var (
+	defaultActivationOption = ActivationOption{
+		enabled:   true,
+		fieldName: "activation",
 	}
-	return Mixin{option: option}
+	defaultLifespanOption = LifespanOption{
+		enabled:          true,
+		startAtFieldName: "lifespan_start_at",
+		endAtFieldName:   "lifespan_end_at",
+	}
+	defaultSoftDeletionOption = SoftDeletionOption{
+		enabled:   true,
+		fieldName: "deleted_at",
+	}
+)
+
+func NewMixin(options ...Option) Mixin {
+	cfg := config{}
+	for _, opt := range options {
+		opt(&cfg)
+	}
+	return Mixin{config: cfg}
 }
 
-func WithAll() OptionFunc {
-	return func(o *option) {
-		o.activation = true
-		o.lifespan.enabled = true
-		o.softDeletion = true
+func NewDefaultMixin() Mixin {
+	return Mixin{
+		config: config{
+			activation:   defaultActivationOption,
+			lifespan:     defaultLifespanOption,
+			softDeletion: defaultSoftDeletionOption,
+		},
 	}
 }
 
-func WithActivation() OptionFunc {
-	return func(o *option) {
-		o.activation = true
+type ActivationOption struct {
+	enabled    bool
+	fieldName  string
+	storageKey string
+}
+
+func (option *ActivationOption) SetFieldName(name string) {
+	option.fieldName = name
+}
+
+func (option *ActivationOption) SetStorageKey(key string) {
+	option.storageKey = key
+}
+
+func WithActivation() Option {
+	return func(cfg *config) {
+		cfg.activation.enabled = true
+	}
+}
+
+func WithActivationOption(option func(*ActivationOption)) Option {
+	return func(cfg *config) {
+		cfg.activation.enabled = true
+		option(&cfg.activation)
 	}
 }
 
 type LifespanOption struct {
-	enabled            bool
-	startAtFieldName   string
-	endAtFieldName     string
-	startAtStorageName string
-	endAtStorageName   string
+	enabled           bool
+	startAtFieldName  string
+	endAtFieldName    string
+	startAtStorageKey string
+	endAtStorageKey   string
 }
 
-var defaultLifespanOption = LifespanOption{
-	enabled:            true,
-	startAtStorageName: "lifespan_start_at",
+func (option *LifespanOption) SetFieldNames(startAt, endAt string) {
+	option.startAtFieldName, option.endAtFieldName = startAt, endAt
 }
 
-func WithLifespan() OptionFunc {
-	return func(o *option) {
+func (option *LifespanOption) SetStorageKeys(startAt, endAt string) {
+	option.startAtStorageKey, option.endAtStorageKey = startAt, endAt
+}
+
+func WithLifespan() Option {
+	return func(o *config) {
 		o.lifespan.enabled = true
 	}
 }
 
-func WithLifespanOption(optFn func(*LifespanOption)) OptionFunc {
-	return func(o *option) {
+func WithLifespanOption(optFn func(*LifespanOption)) Option {
+	return func(o *config) {
 		optFn(&o.lifespan)
 	}
 }
 
-func WithSoftDeletion() OptionFunc {
-	return func(o *option) {
-		o.softDeletion = true
+type SoftDeletionOption struct {
+	enabled    bool
+	fieldName  string
+	storageKey string
+}
+
+func WithSoftDeletion() Option {
+	return func(o *config) {
+		o.softDeletion.enabled = true
 	}
 }
 
 func (m Mixin) Fields() []ent.Field {
 	fields := make([]ent.Field, 0)
-	if m.activation {
+
+	if cfg := m.activation; cfg.enabled {
+		f := field.Enum(cfg.fieldName).
+			GoType(Activation("")).
+			Default(Activated.String())
+		if cfg.storageKey != "" {
+			f.StorageKey(cfg.storageKey)
+		}
+		fields = append(fields, f)
+	}
+
+	if cfg := m.lifespan; cfg.enabled {
 		fields = append(fields, []ent.Field{
-			field.Enum("activation").
-				GoType(Activation("")).
-				Default(Activated.String()),
+			m.makeLifespanField(cfg.startAtFieldName, cfg.startAtStorageKey),
+			m.makeLifespanField(cfg.endAtFieldName, cfg.endAtStorageKey),
 		}...)
 	}
-	if m.lifespan.enabled {
-		fields = append(fields, []ent.Field{
-			field.Time("lifespan_start_at").
-				StorageKey(m.lifespan.startAtStorageName).
-				Optional(),
-			field.Time("lifespan_end_at").
-				StorageKey(m.lifespan.endAtStorageName).
-				Optional(),
-		}...)
-	}
-	if m.softDeletion {
-		fields = append(fields, []ent.Field{
-			field.Time("deleted_at").
-				Optional(),
-		}...)
+
+	if cfg := m.softDeletion; cfg.enabled {
+		f := field.Time(cfg.fieldName).
+			Optional()
+		if cfg.storageKey != "" {
+			f.StorageKey(cfg.storageKey)
+		}
+		fields = append(fields, f)
 	}
 
 	return fields
@@ -105,7 +156,7 @@ func (m Mixin) Fields() []ent.Field {
 
 func (m Mixin) Indexes() []ent.Index {
 	indexes := make([]ent.Index, 0)
-	if m.softDeletion {
+	if m.softDeletion.enabled {
 		indexes = append(indexes, index.Fields("deleted_at"))
 	}
 
@@ -115,9 +166,17 @@ func (m Mixin) Indexes() []ent.Index {
 func (m Mixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		Annotation{
-			Activation:   m.activation,
+			Activation:   m.activation.enabled,
 			Lifespan:     m.lifespan.enabled,
-			SoftDeletion: m.softDeletion,
+			SoftDeletion: m.softDeletion.enabled,
 		},
 	}
+}
+
+func (m Mixin) makeLifespanField(fieldName, storageKey string) ent.Field {
+	f := field.Time(fieldName).Optional()
+	if storageKey != "" {
+		f.StorageKey(storageKey)
+	}
+	return f
 }
