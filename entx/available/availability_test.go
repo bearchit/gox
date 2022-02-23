@@ -1,13 +1,14 @@
 package available_test
 
 import (
+	"testing"
+	"time"
+
 	"github.com/bearchit/gox/entx/available"
-	"github.com/bearchit/gox/entx/available/activation"
+
 	"github.com/bearchit/gox/entx/available/availability"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 //nolint:funlen
@@ -17,7 +18,7 @@ func TestAvailability(t *testing.T) {
 	type given struct {
 		startAt    time.Time
 		endAt      time.Time
-		activation activation.Activation
+		activation available.Activation
 	}
 
 	now := time.Now()
@@ -27,37 +28,37 @@ func TestAvailability(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			given{now.Add(time.Hour), now.Add(2 * time.Hour), activation.Deactivated},
+			given{now.Add(time.Hour), now.Add(2 * time.Hour), available.Deactivated},
 			availability.Deactivated,
 			false,
 		},
 		{
-			given{now.Add(time.Hour), now.Add(2 * time.Hour), activation.Activated},
+			given{now.Add(time.Hour), now.Add(2 * time.Hour), available.Activated},
 			availability.Upcoming,
 			false,
 		},
 		{
-			given{now.Add(-2 * time.Hour), now.Add(-1 * time.Hour), activation.Deactivated},
+			given{now.Add(-2 * time.Hour), now.Add(-1 * time.Hour), available.Deactivated},
 			availability.Deactivated,
 			false,
 		},
 		{
-			given{now.Add(-2 * time.Hour), now.Add(-1 * time.Hour), activation.Activated},
+			given{now.Add(-2 * time.Hour), now.Add(-1 * time.Hour), available.Activated},
 			availability.Ended,
 			false,
 		},
 		{
-			given{now.Add(-time.Hour), now.Add(2 * time.Hour), activation.Deactivated},
+			given{now.Add(-time.Hour), now.Add(2 * time.Hour), available.Deactivated},
 			availability.Deactivated,
 			false,
 		},
 		{
-			given{now.Add(-time.Hour), now.Add(2 * time.Hour), activation.Activated},
+			given{now.Add(-time.Hour), now.Add(2 * time.Hour), available.Activated},
 			availability.InProgress,
 			false,
 		},
 		{
-			given{now.Add(-time.Hour), now.Add(-2 * time.Hour), activation.Activated},
+			given{now.Add(-time.Hour), now.Add(-2 * time.Hour), available.Activated},
 			availability.InProgress,
 			true,
 		},

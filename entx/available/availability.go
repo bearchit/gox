@@ -2,14 +2,14 @@ package available
 
 import (
 	"errors"
-	pkgactivation "github.com/bearchit/gox/entx/available/activation"
+	"time"
+
 	"github.com/bearchit/gox/entx/available/availability"
 	"github.com/bearchit/gox/timex"
-	"time"
 )
 
-func Availability(startAt, endAt time.Time, activation pkgactivation.Activation) (availability.Availability, error) {
-	if activation == pkgactivation.Deactivated {
+func Availability(startAt, endAt time.Time, activation Activation) (availability.Availability, error) {
+	if activation == Deactivated {
 		return availability.Deactivated, nil
 	}
 

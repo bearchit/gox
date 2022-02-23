@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/bearchit/gox/entx/available/activation"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
+	"github.com/bearchit/gox/timex"
 )
 
 // Revision is the model entity for the Revision schema.
@@ -17,10 +17,10 @@ type Revision struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Activation holds the value of the "activation" field.
-	Activation activation.Activation `json:"activation,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	// LifespanStartAt holds the value of the "lifespan_start_at" field.
+	LifespanStartAt time.Time `json:"lifespan_start_at,omitempty"`
+	// LifespanEndAt holds the value of the "lifespan_end_at" field.
+	LifespanEndAt time.Time `json:"lifespan_end_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -30,9 +30,7 @@ func (*Revision) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case revision.FieldID:
 			values[i] = new(sql.NullInt64)
-		case revision.FieldActivation:
-			values[i] = new(sql.NullString)
-		case revision.FieldDeletedAt:
+		case revision.FieldLifespanStartAt, revision.FieldLifespanEndAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Revision", columns[i])
@@ -55,17 +53,17 @@ func (r *Revision) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			r.ID = int(value.Int64)
-		case revision.FieldActivation:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field activation", values[i])
-			} else if value.Valid {
-				r.Activation = activation.Activation(value.String)
-			}
-		case revision.FieldDeletedAt:
+		case revision.FieldLifespanStartAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+				return fmt.Errorf("unexpected type %T for field lifespan_start_at", values[i])
 			} else if value.Valid {
-				r.DeletedAt = value.Time
+				r.LifespanStartAt = value.Time
+			}
+		case revision.FieldLifespanEndAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field lifespan_end_at", values[i])
+			} else if value.Valid {
+				r.LifespanEndAt = value.Time
 			}
 		}
 	}
@@ -95,12 +93,16 @@ func (r *Revision) String() string {
 	var builder strings.Builder
 	builder.WriteString("Revision(")
 	builder.WriteString(fmt.Sprintf("id=%v", r.ID))
-	builder.WriteString(", activation=")
-	builder.WriteString(fmt.Sprintf("%v", r.Activation))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(r.DeletedAt.Format(time.ANSIC))
+	builder.WriteString(", lifespan_start_at=")
+	builder.WriteString(r.LifespanStartAt.Format(time.ANSIC))
+	builder.WriteString(", lifespan_end_at=")
+	builder.WriteString(r.LifespanEndAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+func (r *Revision) Lifespan() (*timex.TimeRange, error) {
+	return timex.NewTimeRange(r.LifespanStartAt, r.LifespanEndAt)
 }
 
 // Revisions is a parsable slice of Revision.

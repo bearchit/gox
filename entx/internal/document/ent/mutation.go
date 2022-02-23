@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/collection"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
@@ -444,7 +444,7 @@ type DocumentMutation struct {
 	op                Op
 	typ               string
 	id                *int
-	activation        *activation.Activation
+	activation        *available.Activation
 	lifespan_start_at *time.Time
 	lifespan_end_at   *time.Time
 	deleted_at        *time.Time
@@ -553,12 +553,12 @@ func (m *DocumentMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetActivation sets the "activation" field.
-func (m *DocumentMutation) SetActivation(a activation.Activation) {
+func (m *DocumentMutation) SetActivation(a available.Activation) {
 	m.activation = &a
 }
 
 // Activation returns the value of the "activation" field in the mutation.
-func (m *DocumentMutation) Activation() (r activation.Activation, exists bool) {
+func (m *DocumentMutation) Activation() (r available.Activation, exists bool) {
 	v := m.activation
 	if v == nil {
 		return
@@ -569,7 +569,7 @@ func (m *DocumentMutation) Activation() (r activation.Activation, exists bool) {
 // OldActivation returns the old "activation" field's value of the Document entity.
 // If the Document object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DocumentMutation) OldActivation(ctx context.Context) (v activation.Activation, err error) {
+func (m *DocumentMutation) OldActivation(ctx context.Context) (v available.Activation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldActivation is only allowed on UpdateOne operations")
 	}
@@ -810,7 +810,7 @@ func (m *DocumentMutation) OldField(ctx context.Context, name string) (ent.Value
 func (m *DocumentMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case document.FieldActivation:
-		v, ok := value.(activation.Activation)
+		v, ok := value.(available.Activation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -974,15 +974,15 @@ func (m *DocumentMutation) ResetEdge(name string) error {
 // RevisionMutation represents an operation that mutates the Revision nodes in the graph.
 type RevisionMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	activation    *activation.Activation
-	deleted_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Revision, error)
-	predicates    []predicate.Revision
+	op                Op
+	typ               string
+	id                *int
+	lifespan_start_at *time.Time
+	lifespan_end_at   *time.Time
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*Revision, error)
+	predicates        []predicate.Revision
 }
 
 var _ ent.Mutation = (*RevisionMutation)(nil)
@@ -1083,89 +1083,102 @@ func (m *RevisionMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetActivation sets the "activation" field.
-func (m *RevisionMutation) SetActivation(a activation.Activation) {
-	m.activation = &a
+// SetLifespanStartAt sets the "lifespan_start_at" field.
+func (m *RevisionMutation) SetLifespanStartAt(t time.Time) {
+	m.lifespan_start_at = &t
 }
 
-// Activation returns the value of the "activation" field in the mutation.
-func (m *RevisionMutation) Activation() (r activation.Activation, exists bool) {
-	v := m.activation
+// LifespanStartAt returns the value of the "lifespan_start_at" field in the mutation.
+func (m *RevisionMutation) LifespanStartAt() (r time.Time, exists bool) {
+	v := m.lifespan_start_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldActivation returns the old "activation" field's value of the Revision entity.
+// OldLifespanStartAt returns the old "lifespan_start_at" field's value of the Revision entity.
 // If the Revision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RevisionMutation) OldActivation(ctx context.Context) (v activation.Activation, err error) {
+func (m *RevisionMutation) OldLifespanStartAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActivation is only allowed on UpdateOne operations")
+		return v, errors.New("OldLifespanStartAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActivation requires an ID field in the mutation")
+		return v, errors.New("OldLifespanStartAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActivation: %w", err)
+		return v, fmt.Errorf("querying old value for OldLifespanStartAt: %w", err)
 	}
-	return oldValue.Activation, nil
+	return oldValue.LifespanStartAt, nil
 }
 
-// ResetActivation resets all changes to the "activation" field.
-func (m *RevisionMutation) ResetActivation() {
-	m.activation = nil
+// ClearLifespanStartAt clears the value of the "lifespan_start_at" field.
+func (m *RevisionMutation) ClearLifespanStartAt() {
+	m.lifespan_start_at = nil
+	m.clearedFields[revision.FieldLifespanStartAt] = struct{}{}
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (m *RevisionMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *RevisionMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the Revision entity.
-// If the Revision object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RevisionMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *RevisionMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[revision.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *RevisionMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[revision.FieldDeletedAt]
+// LifespanStartAtCleared returns if the "lifespan_start_at" field was cleared in this mutation.
+func (m *RevisionMutation) LifespanStartAtCleared() bool {
+	_, ok := m.clearedFields[revision.FieldLifespanStartAt]
 	return ok
 }
 
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *RevisionMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, revision.FieldDeletedAt)
+// ResetLifespanStartAt resets all changes to the "lifespan_start_at" field.
+func (m *RevisionMutation) ResetLifespanStartAt() {
+	m.lifespan_start_at = nil
+	delete(m.clearedFields, revision.FieldLifespanStartAt)
+}
+
+// SetLifespanEndAt sets the "lifespan_end_at" field.
+func (m *RevisionMutation) SetLifespanEndAt(t time.Time) {
+	m.lifespan_end_at = &t
+}
+
+// LifespanEndAt returns the value of the "lifespan_end_at" field in the mutation.
+func (m *RevisionMutation) LifespanEndAt() (r time.Time, exists bool) {
+	v := m.lifespan_end_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLifespanEndAt returns the old "lifespan_end_at" field's value of the Revision entity.
+// If the Revision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RevisionMutation) OldLifespanEndAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLifespanEndAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLifespanEndAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLifespanEndAt: %w", err)
+	}
+	return oldValue.LifespanEndAt, nil
+}
+
+// ClearLifespanEndAt clears the value of the "lifespan_end_at" field.
+func (m *RevisionMutation) ClearLifespanEndAt() {
+	m.lifespan_end_at = nil
+	m.clearedFields[revision.FieldLifespanEndAt] = struct{}{}
+}
+
+// LifespanEndAtCleared returns if the "lifespan_end_at" field was cleared in this mutation.
+func (m *RevisionMutation) LifespanEndAtCleared() bool {
+	_, ok := m.clearedFields[revision.FieldLifespanEndAt]
+	return ok
+}
+
+// ResetLifespanEndAt resets all changes to the "lifespan_end_at" field.
+func (m *RevisionMutation) ResetLifespanEndAt() {
+	m.lifespan_end_at = nil
+	delete(m.clearedFields, revision.FieldLifespanEndAt)
 }
 
 // Where appends a list predicates to the RevisionMutation builder.
@@ -1188,11 +1201,11 @@ func (m *RevisionMutation) Type() string {
 // AddedFields().
 func (m *RevisionMutation) Fields() []string {
 	fields := make([]string, 0, 2)
-	if m.activation != nil {
-		fields = append(fields, revision.FieldActivation)
+	if m.lifespan_start_at != nil {
+		fields = append(fields, revision.FieldLifespanStartAt)
 	}
-	if m.deleted_at != nil {
-		fields = append(fields, revision.FieldDeletedAt)
+	if m.lifespan_end_at != nil {
+		fields = append(fields, revision.FieldLifespanEndAt)
 	}
 	return fields
 }
@@ -1202,10 +1215,10 @@ func (m *RevisionMutation) Fields() []string {
 // schema.
 func (m *RevisionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case revision.FieldActivation:
-		return m.Activation()
-	case revision.FieldDeletedAt:
-		return m.DeletedAt()
+	case revision.FieldLifespanStartAt:
+		return m.LifespanStartAt()
+	case revision.FieldLifespanEndAt:
+		return m.LifespanEndAt()
 	}
 	return nil, false
 }
@@ -1215,10 +1228,10 @@ func (m *RevisionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *RevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case revision.FieldActivation:
-		return m.OldActivation(ctx)
-	case revision.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
+	case revision.FieldLifespanStartAt:
+		return m.OldLifespanStartAt(ctx)
+	case revision.FieldLifespanEndAt:
+		return m.OldLifespanEndAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Revision field %s", name)
 }
@@ -1228,19 +1241,19 @@ func (m *RevisionMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *RevisionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case revision.FieldActivation:
-		v, ok := value.(activation.Activation)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActivation(v)
-		return nil
-	case revision.FieldDeletedAt:
+	case revision.FieldLifespanStartAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDeletedAt(v)
+		m.SetLifespanStartAt(v)
+		return nil
+	case revision.FieldLifespanEndAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLifespanEndAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Revision field %s", name)
@@ -1272,8 +1285,11 @@ func (m *RevisionMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RevisionMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(revision.FieldDeletedAt) {
-		fields = append(fields, revision.FieldDeletedAt)
+	if m.FieldCleared(revision.FieldLifespanStartAt) {
+		fields = append(fields, revision.FieldLifespanStartAt)
+	}
+	if m.FieldCleared(revision.FieldLifespanEndAt) {
+		fields = append(fields, revision.FieldLifespanEndAt)
 	}
 	return fields
 }
@@ -1289,8 +1305,11 @@ func (m *RevisionMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RevisionMutation) ClearField(name string) error {
 	switch name {
-	case revision.FieldDeletedAt:
-		m.ClearDeletedAt()
+	case revision.FieldLifespanStartAt:
+		m.ClearLifespanStartAt()
+		return nil
+	case revision.FieldLifespanEndAt:
+		m.ClearLifespanEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Revision nullable field %s", name)
@@ -1300,11 +1319,11 @@ func (m *RevisionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *RevisionMutation) ResetField(name string) error {
 	switch name {
-	case revision.FieldActivation:
-		m.ResetActivation()
+	case revision.FieldLifespanStartAt:
+		m.ResetLifespanStartAt()
 		return nil
-	case revision.FieldDeletedAt:
-		m.ResetDeletedAt()
+	case revision.FieldLifespanEndAt:
+		m.ResetLifespanEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Revision field %s", name)

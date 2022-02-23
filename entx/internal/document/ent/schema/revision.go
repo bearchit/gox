@@ -12,9 +12,7 @@ type Revision struct {
 
 func (Revision) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		available.NewMixin(
-			available.WithLifespan(false),
-		),
+		available.NewMixin(available.WithLifespan()),
 	}
 }
 

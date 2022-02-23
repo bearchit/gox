@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available/activation"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/document"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
@@ -255,7 +255,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -282,7 +282,7 @@ func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupB
 // Example:
 //
 //	var v []struct {
-//		Activation activation.Activation `json:"activation,omitempty"`
+//		Activation available.Activation `json:"activation,omitempty"`
 //	}
 //
 //	client.Document.Query().
@@ -433,22 +433,41 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (dq *DocumentQuery) Available() *DocumentQuery {
-	return dq.Where(
-		document.ActivationEQ(activation.Activated),
+func (dq *DocumentQuery) Available(opts ...available.QueryOptionFunc) *DocumentQuery {
+	option := &available.QueryOption{At: time.Now()}
+	for _, opt := range opts {
+		opt(option)
+	}
+
+	dq.Where(
 		document.DeletedAtIsNil(),
+	)
+	if option.Preview {
+		return dq.Where(
+			document.Or(
+				document.LifespanEndAtIsNil(),
+				document.And(
+					document.LifespanEndAtNotNil(),
+					document.LifespanEndAtGTE(option.At),
+				),
+			),
+		)
+	}
+
+	return dq.Where(
+		document.ActivationEQ(available.Activated),
 		document.Or(
 			document.LifespanStartAtIsNil(),
 			document.And(
 				document.LifespanStartAtNotNil(),
-				document.LifespanStartAtLTE(time.Now()),
+				document.LifespanStartAtLTE(option.At),
 			),
 		),
 		document.Or(
 			document.LifespanEndAtIsNil(),
 			document.And(
 				document.LifespanEndAtNotNil(),
-				document.LifespanEndAtGTE(time.Now()),
+				document.LifespanEndAtGTE(option.At),
 			),
 		),
 	)

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/collection"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
@@ -432,20 +433,37 @@ func (cq *CollectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (cq *CollectionQuery) Available() *CollectionQuery {
+func (cq *CollectionQuery) Available(opts ...available.QueryOptionFunc) *CollectionQuery {
+	option := &available.QueryOption{At: time.Now()}
+	for _, opt := range opts {
+		opt(option)
+	}
+
+	if option.Preview {
+		return cq.Where(
+			collection.Or(
+				collection.LifespanEndAtIsNil(),
+				collection.And(
+					collection.LifespanEndAtNotNil(),
+					collection.LifespanEndAtGTE(option.At),
+				),
+			),
+		)
+	}
+
 	return cq.Where(
 		collection.Or(
 			collection.LifespanStartAtIsNil(),
 			collection.And(
 				collection.LifespanStartAtNotNil(),
-				collection.LifespanStartAtLTE(time.Now()),
+				collection.LifespanStartAtLTE(option.At),
 			),
 		),
 		collection.Or(
 			collection.LifespanEndAtIsNil(),
 			collection.And(
 				collection.LifespanEndAtNotNil(),
-				collection.LifespanEndAtGTE(time.Now()),
+				collection.LifespanEndAtGTE(option.At),
 			),
 		),
 	)

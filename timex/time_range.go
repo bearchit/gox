@@ -10,6 +10,14 @@ type TimeRange struct {
 	endAt   time.Time
 }
 
+func (ls TimeRange) StartAt() time.Time {
+	return ls.startAt
+}
+
+func (ls TimeRange) EndAt() time.Time {
+	return ls.endAt
+}
+
 func (ls *TimeRange) InProgress(at time.Time) bool {
 	return !ls.Upcoming(at) && !ls.Ended(at)
 }

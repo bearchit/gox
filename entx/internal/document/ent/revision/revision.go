@@ -2,21 +2,15 @@
 
 package revision
 
-import (
-	"fmt"
-
-	"github.com/bearchit/gox/entx/available/activation"
-)
-
 const (
 	// Label holds the string label denoting the revision type in the database.
 	Label = "revision"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldActivation holds the string denoting the activation field in the database.
-	FieldActivation = "activation"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
+	// FieldLifespanStartAt holds the string denoting the lifespan_start_at field in the database.
+	FieldLifespanStartAt = "lifespan_start_at"
+	// FieldLifespanEndAt holds the string denoting the lifespan_end_at field in the database.
+	FieldLifespanEndAt = "lifespan_end_at"
 	// Table holds the table name of the revision in the database.
 	Table = "revisions"
 )
@@ -24,8 +18,8 @@ const (
 // Columns holds all SQL columns for revision fields.
 var Columns = []string{
 	FieldID,
-	FieldActivation,
-	FieldDeletedAt,
+	FieldLifespanStartAt,
+	FieldLifespanEndAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -36,16 +30,4 @@ func ValidColumn(column string) bool {
 		}
 	}
 	return false
-}
-
-const DefaultActivation activation.Activation = "ACTIVATED"
-
-// ActivationValidator is a validator for the "activation" field enum values. It is called by the builders before save.
-func ActivationValidator(a activation.Activation) error {
-	switch a {
-	case "ACTIVATED", "DEACTIVATED":
-		return nil
-	default:
-		return fmt.Errorf("revision: invalid enum value for activation field: %q", a)
-	}
 }

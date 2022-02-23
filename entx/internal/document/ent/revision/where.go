@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/bearchit/gox/entx/available/activation"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 )
 
@@ -93,31 +92,36 @@ func IDLTE(id int) predicate.Revision {
 	})
 }
 
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.Revision {
+// LifespanStartAt applies equality check predicate on the "lifespan_start_at" field. It's identical to LifespanStartAtEQ.
+func LifespanStartAt(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
+		s.Where(sql.EQ(s.C(FieldLifespanStartAt), v))
 	})
 }
 
-// ActivationEQ applies the EQ predicate on the "activation" field.
-func ActivationEQ(v activation.Activation) predicate.Revision {
-	vc := v
+// LifespanEndAt applies equality check predicate on the "lifespan_end_at" field. It's identical to LifespanEndAtEQ.
+func LifespanEndAt(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldActivation), vc))
+		s.Where(sql.EQ(s.C(FieldLifespanEndAt), v))
 	})
 }
 
-// ActivationNEQ applies the NEQ predicate on the "activation" field.
-func ActivationNEQ(v activation.Activation) predicate.Revision {
-	vc := v
+// LifespanStartAtEQ applies the EQ predicate on the "lifespan_start_at" field.
+func LifespanStartAtEQ(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldActivation), vc))
+		s.Where(sql.EQ(s.C(FieldLifespanStartAt), v))
 	})
 }
 
-// ActivationIn applies the In predicate on the "activation" field.
-func ActivationIn(vs ...activation.Activation) predicate.Revision {
+// LifespanStartAtNEQ applies the NEQ predicate on the "lifespan_start_at" field.
+func LifespanStartAtNEQ(v time.Time) predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLifespanStartAt), v))
+	})
+}
+
+// LifespanStartAtIn applies the In predicate on the "lifespan_start_at" field.
+func LifespanStartAtIn(vs ...time.Time) predicate.Revision {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -129,12 +133,12 @@ func ActivationIn(vs ...activation.Activation) predicate.Revision {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldActivation), v...))
+		s.Where(sql.In(s.C(FieldLifespanStartAt), v...))
 	})
 }
 
-// ActivationNotIn applies the NotIn predicate on the "activation" field.
-func ActivationNotIn(vs ...activation.Activation) predicate.Revision {
+// LifespanStartAtNotIn applies the NotIn predicate on the "lifespan_start_at" field.
+func LifespanStartAtNotIn(vs ...time.Time) predicate.Revision {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -146,26 +150,68 @@ func ActivationNotIn(vs ...activation.Activation) predicate.Revision {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldActivation), v...))
+		s.Where(sql.NotIn(s.C(FieldLifespanStartAt), v...))
 	})
 }
 
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Revision {
+// LifespanStartAtGT applies the GT predicate on the "lifespan_start_at" field.
+func LifespanStartAtGT(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
+		s.Where(sql.GT(s.C(FieldLifespanStartAt), v))
 	})
 }
 
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Revision {
+// LifespanStartAtGTE applies the GTE predicate on the "lifespan_start_at" field.
+func LifespanStartAtGTE(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
+		s.Where(sql.GTE(s.C(FieldLifespanStartAt), v))
 	})
 }
 
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Revision {
+// LifespanStartAtLT applies the LT predicate on the "lifespan_start_at" field.
+func LifespanStartAtLT(v time.Time) predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLifespanStartAt), v))
+	})
+}
+
+// LifespanStartAtLTE applies the LTE predicate on the "lifespan_start_at" field.
+func LifespanStartAtLTE(v time.Time) predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLifespanStartAt), v))
+	})
+}
+
+// LifespanStartAtIsNil applies the IsNil predicate on the "lifespan_start_at" field.
+func LifespanStartAtIsNil() predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLifespanStartAt)))
+	})
+}
+
+// LifespanStartAtNotNil applies the NotNil predicate on the "lifespan_start_at" field.
+func LifespanStartAtNotNil() predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLifespanStartAt)))
+	})
+}
+
+// LifespanEndAtEQ applies the EQ predicate on the "lifespan_end_at" field.
+func LifespanEndAtEQ(v time.Time) predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLifespanEndAt), v))
+	})
+}
+
+// LifespanEndAtNEQ applies the NEQ predicate on the "lifespan_end_at" field.
+func LifespanEndAtNEQ(v time.Time) predicate.Revision {
+	return predicate.Revision(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLifespanEndAt), v))
+	})
+}
+
+// LifespanEndAtIn applies the In predicate on the "lifespan_end_at" field.
+func LifespanEndAtIn(vs ...time.Time) predicate.Revision {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -177,12 +223,12 @@ func DeletedAtIn(vs ...time.Time) predicate.Revision {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldDeletedAt), v...))
+		s.Where(sql.In(s.C(FieldLifespanEndAt), v...))
 	})
 }
 
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Revision {
+// LifespanEndAtNotIn applies the NotIn predicate on the "lifespan_end_at" field.
+func LifespanEndAtNotIn(vs ...time.Time) predicate.Revision {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -194,49 +240,49 @@ func DeletedAtNotIn(vs ...time.Time) predicate.Revision {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
+		s.Where(sql.NotIn(s.C(FieldLifespanEndAt), v...))
 	})
 }
 
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Revision {
+// LifespanEndAtGT applies the GT predicate on the "lifespan_end_at" field.
+func LifespanEndAtGT(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDeletedAt), v))
+		s.Where(sql.GT(s.C(FieldLifespanEndAt), v))
 	})
 }
 
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Revision {
+// LifespanEndAtGTE applies the GTE predicate on the "lifespan_end_at" field.
+func LifespanEndAtGTE(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
+		s.Where(sql.GTE(s.C(FieldLifespanEndAt), v))
 	})
 }
 
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Revision {
+// LifespanEndAtLT applies the LT predicate on the "lifespan_end_at" field.
+func LifespanEndAtLT(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDeletedAt), v))
+		s.Where(sql.LT(s.C(FieldLifespanEndAt), v))
 	})
 }
 
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Revision {
+// LifespanEndAtLTE applies the LTE predicate on the "lifespan_end_at" field.
+func LifespanEndAtLTE(v time.Time) predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
+		s.Where(sql.LTE(s.C(FieldLifespanEndAt), v))
 	})
 }
 
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.Revision {
+// LifespanEndAtIsNil applies the IsNil predicate on the "lifespan_end_at" field.
+func LifespanEndAtIsNil() predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
+		s.Where(sql.IsNull(s.C(FieldLifespanEndAt)))
 	})
 }
 
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.Revision {
+// LifespanEndAtNotNil applies the NotNil predicate on the "lifespan_end_at" field.
+func LifespanEndAtNotNil() predicate.Revision {
 	return predicate.Revision(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
+		s.Where(sql.NotNull(s.C(FieldLifespanEndAt)))
 	})
 }
 
