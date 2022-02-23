@@ -65,7 +65,7 @@ type LifespanOption struct {
 
 func WithLifespan(v bool) OptionFunc {
 	return func(o *option) {
-		o.lifespan.enabled = true
+		o.lifespan.enabled = v
 	}
 }
 
