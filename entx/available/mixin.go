@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 )
 
@@ -119,6 +120,15 @@ func (m Mixin) Fields() []ent.Field {
 	}
 
 	return fields
+}
+
+func (m Mixin) Indexes() []ent.Index {
+	indexes := make([]ent.Index, 0)
+	if m.softDeletion {
+		indexes = append(indexes, index.Fields("deleted_at"))
+	}
+
+	return indexes
 }
 
 func (m Mixin) Annotations() []schema.Annotation {
