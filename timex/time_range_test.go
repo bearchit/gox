@@ -9,16 +9,47 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestTimeRange(t *testing.T) {
+	t.Parallel()
+
+	type wants struct {
+		startAt time.Time
+		endAt   time.Time
+	}
+
+	startAt := time.Now()
+	endAt := startAt.Add(time.Hour)
+	tests := []struct {
+		given *timex.TimeRange
+		wants wants
+	}{
+		{timex.Build().MustGet(), wants{}},
+		{timex.Build().StartAt(startAt).MustGet(), wants{startAt: startAt}},
+		{timex.Build().EndAt(endAt).MustGet(), wants{endAt: endAt}},
+		{timex.Build().StartAt(startAt).EndAt(endAt).MustGet(), wants{startAt, endAt}},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.given.StartAt(), tt.wants.startAt, "StartAt")
+			assert.Equal(t, tt.given.EndAt(), tt.wants.endAt, "EndAt")
+		})
+	}
+}
+
 func TestTimeRange_Query(t *testing.T) {
 	t.Parallel()
 
-	now := time.Now()
 	type wants struct {
 		inProgress bool
 		upcoming   bool
 		ended      bool
 	}
 
+	now := time.Now()
 	tests := []struct {
 		name  string
 		given *timex.TimeRange
