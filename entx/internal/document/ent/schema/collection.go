@@ -12,7 +12,7 @@ type Collection struct {
 
 func (Collection) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		available.NewMixin(available.OnlyLifespan()),
+		available.NewMixin(available.WithLifespan()),
 	}
 }
 

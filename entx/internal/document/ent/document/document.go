@@ -16,9 +16,9 @@ const (
 	// FieldActivation holds the string denoting the activation field in the database.
 	FieldActivation = "activation"
 	// FieldLifespanStartAt holds the string denoting the lifespan_start_at field in the database.
-	FieldLifespanStartAt = "lifespan_end_at"
+	FieldLifespanStartAt = "lifespan_start_at"
 	// FieldLifespanEndAt holds the string denoting the lifespan_end_at field in the database.
-	FieldLifespanEndAt = "lifespan_start_at"
+	FieldLifespanEndAt = "lifespan_end_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
 	// Table holds the table name of the document in the database.

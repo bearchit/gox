@@ -11,8 +11,8 @@ var (
 	// CollectionsColumns holds the columns for the "collections" table.
 	CollectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
 		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
 	}
 	// CollectionsTable holds the schema information for the "collections" table.
 	CollectionsTable = &schema.Table{
@@ -24,8 +24,8 @@ var (
 	DocumentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "activation", Type: field.TypeEnum, Enums: []string{"ACTIVATED", "DEACTIVATED"}, Default: "ACTIVATED"},
-		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
 		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 	}
 	// DocumentsTable holds the schema information for the "documents" table.
@@ -33,12 +33,19 @@ var (
 		Name:       "documents",
 		Columns:    DocumentsColumns,
 		PrimaryKey: []*schema.Column{DocumentsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "document_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{DocumentsColumns[4]},
+			},
+		},
 	}
 	// RevisionsColumns holds the columns for the "revisions" table.
 	RevisionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "activation", Type: field.TypeEnum, Enums: []string{"ACTIVATED", "DEACTIVATED"}, Default: "ACTIVATED"},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_start_at", Type: field.TypeTime, Nullable: true},
+		{Name: "lifespan_end_at", Type: field.TypeTime, Nullable: true},
 	}
 	// RevisionsTable holds the schema information for the "revisions" table.
 	RevisionsTable = &schema.Table{

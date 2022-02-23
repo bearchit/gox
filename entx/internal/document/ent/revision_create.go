@@ -4,13 +4,11 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
 
@@ -21,30 +19,30 @@ type RevisionCreate struct {
 	hooks    []Hook
 }
 
-// SetActivation sets the "activation" field.
-func (rc *RevisionCreate) SetActivation(a available.Activation) *RevisionCreate {
-	rc.mutation.SetActivation(a)
+// SetLifespanStartAt sets the "lifespan_start_at" field.
+func (rc *RevisionCreate) SetLifespanStartAt(t time.Time) *RevisionCreate {
+	rc.mutation.SetLifespanStartAt(t)
 	return rc
 }
 
-// SetNillableActivation sets the "activation" field if the given value is not nil.
-func (rc *RevisionCreate) SetNillableActivation(a *available.Activation) *RevisionCreate {
-	if a != nil {
-		rc.SetActivation(*a)
+// SetNillableLifespanStartAt sets the "lifespan_start_at" field if the given value is not nil.
+func (rc *RevisionCreate) SetNillableLifespanStartAt(t *time.Time) *RevisionCreate {
+	if t != nil {
+		rc.SetLifespanStartAt(*t)
 	}
 	return rc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (rc *RevisionCreate) SetDeletedAt(t time.Time) *RevisionCreate {
-	rc.mutation.SetDeletedAt(t)
+// SetLifespanEndAt sets the "lifespan_end_at" field.
+func (rc *RevisionCreate) SetLifespanEndAt(t time.Time) *RevisionCreate {
+	rc.mutation.SetLifespanEndAt(t)
 	return rc
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (rc *RevisionCreate) SetNillableDeletedAt(t *time.Time) *RevisionCreate {
+// SetNillableLifespanEndAt sets the "lifespan_end_at" field if the given value is not nil.
+func (rc *RevisionCreate) SetNillableLifespanEndAt(t *time.Time) *RevisionCreate {
 	if t != nil {
-		rc.SetDeletedAt(*t)
+		rc.SetLifespanEndAt(*t)
 	}
 	return rc
 }
@@ -60,7 +58,6 @@ func (rc *RevisionCreate) Save(ctx context.Context) (*Revision, error) {
 		err  error
 		node *Revision
 	)
-	rc.defaults()
 	if len(rc.hooks) == 0 {
 		if err = rc.check(); err != nil {
 			return nil, err
@@ -118,24 +115,8 @@ func (rc *RevisionCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (rc *RevisionCreate) defaults() {
-	if _, ok := rc.mutation.Activation(); !ok {
-		v := revision.DefaultActivation
-		rc.mutation.SetActivation(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (rc *RevisionCreate) check() error {
-	if _, ok := rc.mutation.Activation(); !ok {
-		return &ValidationError{Name: "activation", err: errors.New(`ent: missing required field "Revision.activation"`)}
-	}
-	if v, ok := rc.mutation.Activation(); ok {
-		if err := revision.ActivationValidator(v); err != nil {
-			return &ValidationError{Name: "activation", err: fmt.Errorf(`ent: validator failed for field "Revision.activation": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -163,21 +144,21 @@ func (rc *RevisionCreate) createSpec() (*Revision, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
-	if value, ok := rc.mutation.Activation(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: revision.FieldActivation,
-		})
-		_node.Activation = value
-	}
-	if value, ok := rc.mutation.DeletedAt(); ok {
+	if value, ok := rc.mutation.LifespanStartAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: revision.FieldDeletedAt,
+			Column: revision.FieldLifespanStartAt,
 		})
-		_node.DeletedAt = value
+		_node.LifespanStartAt = value
+	}
+	if value, ok := rc.mutation.LifespanEndAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: revision.FieldLifespanEndAt,
+		})
+		_node.LifespanEndAt = value
 	}
 	return _node, _spec
 }
@@ -196,7 +177,6 @@ func (rcb *RevisionCreateBulk) Save(ctx context.Context) ([]*Revision, error) {
 	for i := range rcb.builders {
 		func(i int, root context.Context) {
 			builder := rcb.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*RevisionMutation)
 				if !ok {

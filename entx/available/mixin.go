@@ -16,80 +16,61 @@ type Mixin struct {
 type option struct {
 	activation   bool
 	softDeletion bool
-	lifespan     Lifespan
+	lifespan     LifespanOption
 }
 
 type OptionFunc func(*option)
 
 func NewMixin(opts ...OptionFunc) Mixin {
-	result := Mixin{
-		option: option{
-			activation: true,
-			lifespan: Lifespan{
-				enabled: true,
-				option: LifespanOption{
-					StorageNameStartAt: "lifespan_end_at",
-					StorageNameEndAt:   "lifespan_start_at",
-				},
-			},
-			softDeletion: true,
-		},
-	}
+	option := option{}
 	for _, opt := range opts {
-		opt(&result.option)
+		opt(&option)
 	}
-	return result
+	return Mixin{option: option}
 }
 
-func OnlyActivation() OptionFunc {
+func WithAll() OptionFunc {
 	return func(o *option) {
-		*o = option{activation: true}
+		o.activation = true
+		o.lifespan.enabled = true
+		o.softDeletion = true
 	}
 }
 
-func WithActivation(v bool) OptionFunc {
+func WithActivation() OptionFunc {
 	return func(o *option) {
-		o.activation = v
+		o.activation = true
 	}
-}
-
-type Lifespan struct {
-	enabled bool
-	option  LifespanOption
 }
 
 type LifespanOption struct {
-	StorageNameStartAt string
-	StorageNameEndAt   string
+	enabled            bool
+	startAtFieldName   string
+	endAtFieldName     string
+	startAtStorageName string
+	endAtStorageName   string
 }
 
-func WithLifespan(v bool) OptionFunc {
-	return func(o *option) {
-		o.lifespan.enabled = v
-	}
+var defaultLifespanOption = LifespanOption{
+	enabled:            true,
+	startAtStorageName: "lifespan_start_at",
 }
 
-func OnlyLifespan() OptionFunc {
+func WithLifespan() OptionFunc {
 	return func(o *option) {
-		*o = option{lifespan: Lifespan{enabled: true}}
+		o.lifespan.enabled = true
 	}
 }
 
 func WithLifespanOption(optFn func(*LifespanOption)) OptionFunc {
 	return func(o *option) {
-		optFn(&o.lifespan.option)
+		optFn(&o.lifespan)
 	}
 }
 
-func OnlySoftDeletion() OptionFunc {
+func WithSoftDeletion() OptionFunc {
 	return func(o *option) {
-		*o = option{softDeletion: true}
-	}
-}
-
-func WithSoftDeletion(v bool) OptionFunc {
-	return func(o *option) {
-		o.softDeletion = v
+		o.softDeletion = true
 	}
 }
 
@@ -105,10 +86,10 @@ func (m Mixin) Fields() []ent.Field {
 	if m.lifespan.enabled {
 		fields = append(fields, []ent.Field{
 			field.Time("lifespan_start_at").
-				StorageKey(m.lifespan.option.StorageNameStartAt).
+				StorageKey(m.lifespan.startAtStorageName).
 				Optional(),
 			field.Time("lifespan_end_at").
-				StorageKey(m.lifespan.option.StorageNameEndAt).
+				StorageKey(m.lifespan.endAtStorageName).
 				Optional(),
 		}...)
 	}

@@ -15,9 +15,4 @@ func init() {
 	_ = documentMixinFields0
 	documentFields := schema.Document{}.Fields()
 	_ = documentFields
-	revisionMixin := schema.Revision{}.Mixin()
-	revisionMixinFields0 := revisionMixin[0].Fields()
-	_ = revisionMixinFields0
-	revisionFields := schema.Revision{}.Fields()
-	_ = revisionFields
 }

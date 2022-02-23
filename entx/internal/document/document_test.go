@@ -58,7 +58,7 @@ func (s *documentTestSuite) TestQueryAvailable() {
 		t.Parallel()
 
 		collection, err := s.entc.Collection.Query().
-			Available(false).
+			Available().
 			First(ctx)
 		require.NoError(t, err)
 
@@ -70,7 +70,7 @@ func (s *documentTestSuite) TestQueryAvailable() {
 		t.Parallel()
 
 		document, err := s.entc.Document.Query().
-			Available(false).
+			Available().
 			First(ctx)
 		require.NoError(t, err)
 

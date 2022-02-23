@@ -433,18 +433,22 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (dq *DocumentQuery) Available(preview bool) *DocumentQuery {
-	now := time.Now()
+func (dq *DocumentQuery) Available(opts ...available.QueryOptionFunc) *DocumentQuery {
+	option := &available.QueryOption{At: time.Now()}
+	for _, opt := range opts {
+		opt(option)
+	}
+
 	dq.Where(
 		document.DeletedAtIsNil(),
 	)
-	if preview {
+	if option.Preview {
 		return dq.Where(
 			document.Or(
 				document.LifespanEndAtIsNil(),
 				document.And(
 					document.LifespanEndAtNotNil(),
-					document.LifespanEndAtGTE(now),
+					document.LifespanEndAtGTE(option.At),
 				),
 			),
 		)
@@ -456,14 +460,14 @@ func (dq *DocumentQuery) Available(preview bool) *DocumentQuery {
 			document.LifespanStartAtIsNil(),
 			document.And(
 				document.LifespanStartAtNotNil(),
-				document.LifespanStartAtLTE(time.Now()),
+				document.LifespanStartAtLTE(option.At),
 			),
 		),
 		document.Or(
 			document.LifespanEndAtIsNil(),
 			document.And(
 				document.LifespanEndAtNotNil(),
-				document.LifespanEndAtGTE(time.Now()),
+				document.LifespanEndAtGTE(option.At),
 			),
 		),
 	)

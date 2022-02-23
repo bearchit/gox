@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/bearchit/gox/entx/available"
 	"github.com/bearchit/gox/entx/internal/document/ent/predicate"
 	"github.com/bearchit/gox/entx/internal/document/ent/revision"
 )
@@ -29,37 +28,43 @@ func (ru *RevisionUpdate) Where(ps ...predicate.Revision) *RevisionUpdate {
 	return ru
 }
 
-// SetActivation sets the "activation" field.
-func (ru *RevisionUpdate) SetActivation(a available.Activation) *RevisionUpdate {
-	ru.mutation.SetActivation(a)
+// SetLifespanStartAt sets the "lifespan_start_at" field.
+func (ru *RevisionUpdate) SetLifespanStartAt(t time.Time) *RevisionUpdate {
+	ru.mutation.SetLifespanStartAt(t)
 	return ru
 }
 
-// SetNillableActivation sets the "activation" field if the given value is not nil.
-func (ru *RevisionUpdate) SetNillableActivation(a *available.Activation) *RevisionUpdate {
-	if a != nil {
-		ru.SetActivation(*a)
-	}
-	return ru
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (ru *RevisionUpdate) SetDeletedAt(t time.Time) *RevisionUpdate {
-	ru.mutation.SetDeletedAt(t)
-	return ru
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ru *RevisionUpdate) SetNillableDeletedAt(t *time.Time) *RevisionUpdate {
+// SetNillableLifespanStartAt sets the "lifespan_start_at" field if the given value is not nil.
+func (ru *RevisionUpdate) SetNillableLifespanStartAt(t *time.Time) *RevisionUpdate {
 	if t != nil {
-		ru.SetDeletedAt(*t)
+		ru.SetLifespanStartAt(*t)
 	}
 	return ru
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ru *RevisionUpdate) ClearDeletedAt() *RevisionUpdate {
-	ru.mutation.ClearDeletedAt()
+// ClearLifespanStartAt clears the value of the "lifespan_start_at" field.
+func (ru *RevisionUpdate) ClearLifespanStartAt() *RevisionUpdate {
+	ru.mutation.ClearLifespanStartAt()
+	return ru
+}
+
+// SetLifespanEndAt sets the "lifespan_end_at" field.
+func (ru *RevisionUpdate) SetLifespanEndAt(t time.Time) *RevisionUpdate {
+	ru.mutation.SetLifespanEndAt(t)
+	return ru
+}
+
+// SetNillableLifespanEndAt sets the "lifespan_end_at" field if the given value is not nil.
+func (ru *RevisionUpdate) SetNillableLifespanEndAt(t *time.Time) *RevisionUpdate {
+	if t != nil {
+		ru.SetLifespanEndAt(*t)
+	}
+	return ru
+}
+
+// ClearLifespanEndAt clears the value of the "lifespan_end_at" field.
+func (ru *RevisionUpdate) ClearLifespanEndAt() *RevisionUpdate {
+	ru.mutation.ClearLifespanEndAt()
 	return ru
 }
 
@@ -75,18 +80,12 @@ func (ru *RevisionUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(ru.hooks) == 0 {
-		if err = ru.check(); err != nil {
-			return 0, err
-		}
 		affected, err = ru.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*RevisionMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ru.check(); err != nil {
-				return 0, err
 			}
 			ru.mutation = mutation
 			affected, err = ru.sqlSave(ctx)
@@ -128,16 +127,6 @@ func (ru *RevisionUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (ru *RevisionUpdate) check() error {
-	if v, ok := ru.mutation.Activation(); ok {
-		if err := revision.ActivationValidator(v); err != nil {
-			return &ValidationError{Name: "activation", err: fmt.Errorf(`ent: validator failed for field "Revision.activation": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (ru *RevisionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -156,24 +145,30 @@ func (ru *RevisionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ru.mutation.Activation(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: revision.FieldActivation,
-		})
-	}
-	if value, ok := ru.mutation.DeletedAt(); ok {
+	if value, ok := ru.mutation.LifespanStartAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: revision.FieldDeletedAt,
+			Column: revision.FieldLifespanStartAt,
 		})
 	}
-	if ru.mutation.DeletedAtCleared() {
+	if ru.mutation.LifespanStartAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: revision.FieldDeletedAt,
+			Column: revision.FieldLifespanStartAt,
+		})
+	}
+	if value, ok := ru.mutation.LifespanEndAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: revision.FieldLifespanEndAt,
+		})
+	}
+	if ru.mutation.LifespanEndAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: revision.FieldLifespanEndAt,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
@@ -195,37 +190,43 @@ type RevisionUpdateOne struct {
 	mutation *RevisionMutation
 }
 
-// SetActivation sets the "activation" field.
-func (ruo *RevisionUpdateOne) SetActivation(a available.Activation) *RevisionUpdateOne {
-	ruo.mutation.SetActivation(a)
+// SetLifespanStartAt sets the "lifespan_start_at" field.
+func (ruo *RevisionUpdateOne) SetLifespanStartAt(t time.Time) *RevisionUpdateOne {
+	ruo.mutation.SetLifespanStartAt(t)
 	return ruo
 }
 
-// SetNillableActivation sets the "activation" field if the given value is not nil.
-func (ruo *RevisionUpdateOne) SetNillableActivation(a *available.Activation) *RevisionUpdateOne {
-	if a != nil {
-		ruo.SetActivation(*a)
-	}
-	return ruo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (ruo *RevisionUpdateOne) SetDeletedAt(t time.Time) *RevisionUpdateOne {
-	ruo.mutation.SetDeletedAt(t)
-	return ruo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ruo *RevisionUpdateOne) SetNillableDeletedAt(t *time.Time) *RevisionUpdateOne {
+// SetNillableLifespanStartAt sets the "lifespan_start_at" field if the given value is not nil.
+func (ruo *RevisionUpdateOne) SetNillableLifespanStartAt(t *time.Time) *RevisionUpdateOne {
 	if t != nil {
-		ruo.SetDeletedAt(*t)
+		ruo.SetLifespanStartAt(*t)
 	}
 	return ruo
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ruo *RevisionUpdateOne) ClearDeletedAt() *RevisionUpdateOne {
-	ruo.mutation.ClearDeletedAt()
+// ClearLifespanStartAt clears the value of the "lifespan_start_at" field.
+func (ruo *RevisionUpdateOne) ClearLifespanStartAt() *RevisionUpdateOne {
+	ruo.mutation.ClearLifespanStartAt()
+	return ruo
+}
+
+// SetLifespanEndAt sets the "lifespan_end_at" field.
+func (ruo *RevisionUpdateOne) SetLifespanEndAt(t time.Time) *RevisionUpdateOne {
+	ruo.mutation.SetLifespanEndAt(t)
+	return ruo
+}
+
+// SetNillableLifespanEndAt sets the "lifespan_end_at" field if the given value is not nil.
+func (ruo *RevisionUpdateOne) SetNillableLifespanEndAt(t *time.Time) *RevisionUpdateOne {
+	if t != nil {
+		ruo.SetLifespanEndAt(*t)
+	}
+	return ruo
+}
+
+// ClearLifespanEndAt clears the value of the "lifespan_end_at" field.
+func (ruo *RevisionUpdateOne) ClearLifespanEndAt() *RevisionUpdateOne {
+	ruo.mutation.ClearLifespanEndAt()
 	return ruo
 }
 
@@ -248,18 +249,12 @@ func (ruo *RevisionUpdateOne) Save(ctx context.Context) (*Revision, error) {
 		node *Revision
 	)
 	if len(ruo.hooks) == 0 {
-		if err = ruo.check(); err != nil {
-			return nil, err
-		}
 		node, err = ruo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*RevisionMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ruo.check(); err != nil {
-				return nil, err
 			}
 			ruo.mutation = mutation
 			node, err = ruo.sqlSave(ctx)
@@ -301,16 +296,6 @@ func (ruo *RevisionUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (ruo *RevisionUpdateOne) check() error {
-	if v, ok := ruo.mutation.Activation(); ok {
-		if err := revision.ActivationValidator(v); err != nil {
-			return &ValidationError{Name: "activation", err: fmt.Errorf(`ent: validator failed for field "Revision.activation": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (ruo *RevisionUpdateOne) sqlSave(ctx context.Context) (_node *Revision, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -346,24 +331,30 @@ func (ruo *RevisionUpdateOne) sqlSave(ctx context.Context) (_node *Revision, err
 			}
 		}
 	}
-	if value, ok := ruo.mutation.Activation(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: revision.FieldActivation,
-		})
-	}
-	if value, ok := ruo.mutation.DeletedAt(); ok {
+	if value, ok := ruo.mutation.LifespanStartAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: revision.FieldDeletedAt,
+			Column: revision.FieldLifespanStartAt,
 		})
 	}
-	if ruo.mutation.DeletedAtCleared() {
+	if ruo.mutation.LifespanStartAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: revision.FieldDeletedAt,
+			Column: revision.FieldLifespanStartAt,
+		})
+	}
+	if value, ok := ruo.mutation.LifespanEndAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: revision.FieldLifespanEndAt,
+		})
+	}
+	if ruo.mutation.LifespanEndAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: revision.FieldLifespanEndAt,
 		})
 	}
 	_node = &Revision{config: ruo.config}

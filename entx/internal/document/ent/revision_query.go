@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -254,12 +255,12 @@ func (rq *RevisionQuery) Clone() *RevisionQuery {
 // Example:
 //
 //	var v []struct {
-//		Activation available.Activation `json:"activation,omitempty"`
+//		LifespanStartAt time.Time `json:"lifespan_start_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Revision.Query().
-//		GroupBy(revision.FieldActivation).
+//		GroupBy(revision.FieldLifespanStartAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -281,11 +282,11 @@ func (rq *RevisionQuery) GroupBy(field string, fields ...string) *RevisionGroupB
 // Example:
 //
 //	var v []struct {
-//		Activation available.Activation `json:"activation,omitempty"`
+//		LifespanStartAt time.Time `json:"lifespan_start_at,omitempty"`
 //	}
 //
 //	client.Revision.Query().
-//		Select(revision.FieldActivation).
+//		Select(revision.FieldLifespanStartAt).
 //		Scan(ctx, &v)
 //
 func (rq *RevisionQuery) Select(fields ...string) *RevisionSelect {
@@ -432,14 +433,39 @@ func (rq *RevisionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-func (rq *RevisionQuery) Available() *RevisionQuery {
+func (rq *RevisionQuery) Available(opts ...available.QueryOptionFunc) *RevisionQuery {
+	option := &available.QueryOption{At: time.Now()}
+	for _, opt := range opts {
+		opt(option)
+	}
 
-	rq.Where(
-		revision.DeletedAtIsNil(),
-	)
+	if option.Preview {
+		return rq.Where(
+			revision.Or(
+				revision.LifespanEndAtIsNil(),
+				revision.And(
+					revision.LifespanEndAtNotNil(),
+					revision.LifespanEndAtGTE(option.At),
+				),
+			),
+		)
+	}
 
 	return rq.Where(
-		revision.ActivationEQ(available.Activated),
+		revision.Or(
+			revision.LifespanStartAtIsNil(),
+			revision.And(
+				revision.LifespanStartAtNotNil(),
+				revision.LifespanStartAtLTE(option.At),
+			),
+		),
+		revision.Or(
+			revision.LifespanEndAtIsNil(),
+			revision.And(
+				revision.LifespanEndAtNotNil(),
+				revision.LifespanEndAtGTE(option.At),
+			),
+		),
 	)
 }
 
