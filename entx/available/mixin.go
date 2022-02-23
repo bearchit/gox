@@ -61,23 +61,25 @@ type ActivationOption struct {
 	storageKey string
 }
 
-func (option *ActivationOption) SetFieldName(name string) {
+func (option *ActivationOption) SetFieldName(name string) *ActivationOption {
 	option.fieldName = name
+	return option
 }
 
-func (option *ActivationOption) SetStorageKey(key string) {
+func (option *ActivationOption) SetStorageKey(key string) *ActivationOption {
 	option.storageKey = key
+	return option
 }
 
 func WithActivation() Option {
 	return func(cfg *config) {
-		cfg.activation.enabled = true
+		cfg.activation = defaultActivationOption
 	}
 }
 
 func WithActivationOption(option func(*ActivationOption)) Option {
 	return func(cfg *config) {
-		cfg.activation.enabled = true
+		cfg.activation = defaultActivationOption
 		option(&cfg.activation)
 	}
 }
@@ -90,23 +92,26 @@ type LifespanOption struct {
 	endAtStorageKey   string
 }
 
-func (option *LifespanOption) SetFieldNames(startAt, endAt string) {
+func (option *LifespanOption) SetFieldNames(startAt, endAt string) *LifespanOption {
 	option.startAtFieldName, option.endAtFieldName = startAt, endAt
+	return option
 }
 
-func (option *LifespanOption) SetStorageKeys(startAt, endAt string) {
+func (option *LifespanOption) SetStorageKeys(startAt, endAt string) *LifespanOption {
 	option.startAtStorageKey, option.endAtStorageKey = startAt, endAt
+	return option
 }
 
 func WithLifespan() Option {
-	return func(o *config) {
-		o.lifespan.enabled = true
+	return func(cfg *config) {
+		cfg.lifespan = defaultLifespanOption
 	}
 }
 
-func WithLifespanOption(optFn func(*LifespanOption)) Option {
-	return func(o *config) {
-		optFn(&o.lifespan)
+func WithLifespanOption(option func(*LifespanOption)) Option {
+	return func(cfg *config) {
+		cfg.lifespan = defaultLifespanOption
+		option(&cfg.lifespan)
 	}
 }
 
@@ -116,9 +121,26 @@ type SoftDeletionOption struct {
 	storageKey string
 }
 
+func (option *SoftDeletionOption) SetFieldName(name string) *SoftDeletionOption {
+	option.fieldName = name
+	return option
+}
+
+func (option *SoftDeletionOption) SetStorageKey(key string) *SoftDeletionOption {
+	option.storageKey = key
+	return option
+}
+
 func WithSoftDeletion() Option {
-	return func(o *config) {
-		o.softDeletion.enabled = true
+	return func(cfg *config) {
+		cfg.softDeletion = defaultSoftDeletionOption
+	}
+}
+
+func WithSoftDeletionOption(option func(*SoftDeletionOption)) Option {
+	return func(cfg *config) {
+		cfg.softDeletion = defaultSoftDeletionOption
+		option(&cfg.softDeletion)
 	}
 }
 
