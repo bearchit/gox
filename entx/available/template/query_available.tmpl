@@ -9,15 +9,12 @@
 {{ if $annotation }}
 
 func ({{ $receiver }} *{{ $builder }}) Available(opts ...available.QueryOptionFunc) *{{ $builder }} {
-	option := &available.QueryOption{}
+	option := &available.QueryOption{At: time.Now()}
 	for _, opt := range opts {
 		opt(option)
 	}
 
 	{{ $predPackage := print (lower $.Name) -}}
-	{{- if $annotation.Lifespan -}}
-	now := time.Now()
-	{{- end -}}
 
 	{{ if $annotation.SoftDeletion }}
 	{{ $receiver }}.Where(
@@ -32,7 +29,7 @@ func ({{ $receiver }} *{{ $builder }}) Available(opts ...available.QueryOptionFu
 				{{ $predPackage }}.LifespanEndAtIsNil(),
 				{{ $predPackage }}.And(
 					{{ $predPackage }}.LifespanEndAtNotNil(),
-					{{ $predPackage }}.LifespanEndAtGTE(now),
+					{{ $predPackage }}.LifespanEndAtGTE(option.At),
 				),
 			),
 		)
@@ -49,14 +46,14 @@ func ({{ $receiver }} *{{ $builder }}) Available(opts ...available.QueryOptionFu
 			{{ $predPackage }}.LifespanStartAtIsNil(),
 			{{ $predPackage }}.And(
 				{{ $predPackage }}.LifespanStartAtNotNil(),
-				{{ $predPackage }}.LifespanStartAtLTE(time.Now()),
+				{{ $predPackage }}.LifespanStartAtLTE(option.At),
 			),
 		),
 		{{ $predPackage }}.Or(
 			{{ $predPackage }}.LifespanEndAtIsNil(),
 			{{ $predPackage }}.And(
 				{{ $predPackage }}.LifespanEndAtNotNil(),
-				{{ $predPackage }}.LifespanEndAtGTE(time.Now()),
+				{{ $predPackage }}.LifespanEndAtGTE(option.At),
 			),
 		),
 		{{ end }}
