@@ -18,10 +18,10 @@ func New(loaders ...Loader) Configx {
 func (cfgx Configx) Load(v interface{}) error {
 	for _, loader := range cfgx.loaders {
 		err := loader.unmarshaller.Unmarshal(v)
-		if err != nil {
-			if loader.breakOnError {
-				return fmt.Errorf("failed to load configuration: %w", err)
-			}
+		if err == nil {
+			return nil
+		} else if err != nil && loader.breakOnError {
+			return fmt.Errorf("failed to load configuration: %w", err)
 		}
 	}
 	return nil

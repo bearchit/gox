@@ -9,6 +9,8 @@ import (
 )
 
 func TestDefaultLoader(t *testing.T) {
+	t.Parallel()
+
 	var config struct {
 		Simple string `default:"simple"`
 		Nested struct {

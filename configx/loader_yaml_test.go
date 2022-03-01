@@ -1,13 +1,16 @@
 package configx_test
 
 import (
+	"testing"
+
 	"github.com/bearchit/gox/configx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestYAMLLoader(t *testing.T) {
+	t.Parallel()
+
 	var config struct {
 		Simple string
 		Nested struct {
