@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConfigx(t *testing.T) {
+func TestDefaultLoader(t *testing.T) {
 	var config struct {
 		Simple string `default:"simple"`
 		Nested struct {

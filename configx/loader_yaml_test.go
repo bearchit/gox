@@ -1,14 +1,13 @@
 package configx_test
 
 import (
-	"testing"
-
 	"github.com/bearchit/gox/configx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-func TestEnvLoader(t *testing.T) {
+func TestYAMLLoader(t *testing.T) {
 	var config struct {
 		Simple string
 		Nested struct {
@@ -20,11 +19,10 @@ func TestEnvLoader(t *testing.T) {
 
 	cfgx := configx.New(
 		configx.NewLoader(
-			configx.NewEnvLoader(""),
+			configx.NewYAMLLoader("testdata/test.yml"),
 			true,
 		),
 	)
-	t.Setenv("SIMPLE", "simple")
 	err := cfgx.Load(&config)
 	require.NoError(t, err)
 	assert.Equal(t, "simple", config.Simple)

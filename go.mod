@@ -14,7 +14,9 @@ require (
 
 require (
 	entgo.io/ent v0.10.0
+	github.com/joho/godotenv v1.4.0
 	github.com/mattn/go-sqlite3 v1.14.11
+	github.com/mitchellh/mapstructure v1.4.3
 )
 
 require (
@@ -49,5 +51,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
