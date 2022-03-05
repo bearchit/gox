@@ -21,11 +21,12 @@ func TestDotEnvLoader(t *testing.T) {
 	}
 	cfgx := configx.New(
 		configx.NewLoader(
-			configx.NewDotEnvLoader("testdata/.env"),
+			configx.NewDotEnvLoader("test", "testdata/.env"),
 			true,
 		),
 	)
 	err := cfgx.Load(&config)
 	require.NoError(t, err)
 	assert.Equal(t, "simple", config.Simple)
+	assert.Equal(t, "nested", config.Nested.Name)
 }

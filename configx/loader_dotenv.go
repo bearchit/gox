@@ -4,15 +4,16 @@ import (
 	"fmt"
 
 	"github.com/joho/godotenv"
-	"github.com/mitchellh/mapstructure"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type DotEnvLoader struct {
-	paths []string
+	prefix string
+	paths  []string
 }
 
-func NewDotEnvLoader(paths ...string) DotEnvLoader {
-	loader := DotEnvLoader{paths: paths}
+func NewDotEnvLoader(prefix string, paths ...string) DotEnvLoader {
+	loader := DotEnvLoader{prefix: prefix, paths: paths}
 	if len(paths) == 0 {
 		loader.paths = []string{
 			".env",
@@ -23,11 +24,10 @@ func NewDotEnvLoader(paths ...string) DotEnvLoader {
 }
 
 func (loader DotEnvLoader) Unmarshal(v interface{}) error {
-	reads, err := godotenv.Read(loader.paths...)
-	if err != nil {
-		return fmt.Errorf("failed to read dotenv files: %w", err)
+	if err := godotenv.Load(loader.paths...); err != nil {
+		return fmt.Errorf("failed to load dotenv files: %w", err)
 	}
-	if err = mapstructure.Decode(reads, v); err != nil {
+	if err := envconfig.Process(loader.prefix, v); err != nil {
 		return fmt.Errorf("unmarshal dotenv: %w", err)
 	}
 	return nil
